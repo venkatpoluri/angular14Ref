@@ -1,0 +1,134 @@
+<div *ngIf="currentView != 'MenuItemBuildEdit'" class="col d-flex justify-content-end align-items-end filterDisplayButton">
+  <!-- <button   class="btn apply-filter" (click)="applyfilter($event)"><i i-bs name="funnel-fill"></i>&nbsp;&nbsp;Apply
+      Filters</button> -->
+</div>
+<div class="grid"  style="width:100%">
+  <ngx-skeleton-loader *ngIf="loading" [count]="search.pageSize"></ngx-skeleton-loader>
+  <div class="div-trading"  *ngIf="!loading">
+      <div class="filter-manage">
+          <div class="filter-btns">
+              <a *ngFor="let filter of filters" (click)="clearFilter($event,filter, false)"
+                  class="btn btn-outline-secondary filterbtn">{{filter['key']}} : {{filter['value']}}
+                  <i i-bs name="x-circle"></i>
+              </a>
+              <a class="clear-filters" *ngIf="filters.length > 0" (click)="clearFilter($event, undefined, true)">Clear
+                  filters</a>
+          </div>
+      </div>
+      <div [ngClass]="{'table-container':currentView=='AlternativeItemsAdd', 'table-container-menuItemBuild':(currentView=='MenuItemBuildAdd' || currentView=='MenuItemBuildEdit')}" style="overflow-x:auto; width:100%">
+          <table class="data-table" #gridViewTable  style="width:inherit">
+          <thead>
+            <tr>
+              <th *ngIf="currentView=='AlternativeItemsAdd'" class="check-col">
+                <input type="checkbox" disabled="true" [(ngModel)]="selectedAll"   class="margin-right-5 tableCheckbox"
+                  class="margin-right-5 ">
+              </th>
+              <th *ngIf="currentView=='addItemstoHeirachy' || currentView== 'MenuItemBuildAdd'"></th>
+              <th *ngFor="let header of dataGridHeader; let i = index" scope="col" class="cl{{i}} font-bold header-cell" id="cl{{i}}"
+                title="{{header.mouseOver}}" [resizeColumn]="true">{{header.headerTitle}} </th>
+            </tr>
+
+            <tr *ngIf="currentView != 'MenuItemBuildEdit'" class="search">
+              <td></td>
+              <td *ngFor="let item of dataGridHeader |  keyvalue: asIsOrder let idx = index" class="cl{{idx}} search-cell">
+                <ng-container *ngIf="colIsDropDown(item.key);else input">
+                  <select class="form-control" id="{{item.key}}" (blur)="setSearchTerm($event)"   (keyup.enter)="FilterNew($event)">
+                    <option>Select</option>
+                    <option *ngFor="let opt of getSelectValues(item.key)" [value]="opt">{{opt}}</option>
+                  </select>
+                </ng-container>
+                <ng-template #input>
+                  <input *ngIf="dataGridHeader[item.key].dataType != 'boolean' && dataGridHeader[item.key].dataType != 'enum' " class="form-control inputs" type="text" placeholder="{{item.value.headerTitle}}" id="{{item.key}}"
+                    (blur)="setSearchTerm($event)"  (keyup.enter)="FilterNew($event)">
+                    <select *ngIf="dataGridHeader[item.key].dataType == 'boolean'&& !dataGridHeader[item.key].enum"
+                    class="form-control" (blur)="setSearchTerm($event)"  (keyup.enter)="FilterNew($event)" id="{{item.key}}">
+                    <option value="">Select</option>
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                  <select placeholder="select"
+                    *ngIf="dataGridHeader[item.key].dataType == 'boolean' && dataGridHeader[item.key].enum"
+                    class="form-control" (blur)="setSearchTerm($event)"   (keyup.enter)="FilterNew($event)" id="{{item.key}}">
+                    <option *ngFor="let item of dataGridHeader[item.key].enum" [value]="item.value">{{item.key}}</option>
+                  </select>
+                  <select *ngIf="dataGridHeader[item.key].dataType == 'enum'" class="form-control"
+                    (blur)="setSearchTerm($event)"  (keydown.enter)="FilterNew($event)" id="{{item.key}}">
+                    <option value="">Select</option>
+                    <option *ngFor="let val of dataGridHeader[item.key].enum">{{val}}</option>
+                  </select>
+                </ng-template>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let data of dataGridData | paginate: {id:'paginate2', itemsPerPage:  search.pageSize, currentPage: search.pageNumber, totalItems:  search.total }; let i = index">
+
+              <td *ngIf="currentView != 'MenuItemBuildEdit'" class="check-col">
+                <input type="checkbox" class="tableCheckbox" id="alternativechecked{{i}}" (change)="checkIfAllItemSelected()">
+              </td>
+              <td
+                *ngFor="let val of data |  keyvalue: asIsOrder | slice:currentView !== 'users' ? 0 : 1 ; let idx = index"
+                class="cl{{idx}} table-data-cell" id="cl{{idx}}">
+                <div *ngIf="currentView=='AlternativeItemsAdd'">
+                <ng-container *ngIf="val.key!=='roles';else roles">
+                    <a href="javascript:void(0)" class="infoCell" (click)="getViewPath(data,$event,i)"
+                    *ngIf="val.key === '0';else plain_text">
+                    <a>{{val.value}}</a></a>
+                  <ng-template #plain_text>
+                    <span *ngIf="val.key!=='username'" > {{val.value}}</span>
+                  </ng-template>
+                </ng-container>
+                <ng-template #roles>
+
+                  <ul *ngFor="let role of getArray(val.value)" class="buttons">
+                    <li>
+                      <div class="btn-group btn-roles">
+                        <button class="btn  tenant">{{role.tenant}}</button>
+                        <button class="btn role">{{role.roles}}</button>
+                      </div>
+
+                    </li>
+                  </ul>
+                </ng-template>
+                  </div>
+                  <div *ngIf="currentView=='MenuItemBuildAdd'">
+                    <ng-container *ngIf="val.key !=7; else servingUnits">
+                    <span *ngIf="val.key!=='username'" > {{val.value}}</span>
+                    </ng-container>
+                    <ng-template #servingUnits>
+                      <input type="text" class="input-para" [value]="val.value" (change)="changeServingUnits(i,$event)">
+                    </ng-template>
+                  </div>
+                  <div *ngIf="currentView=='MenuItemBuildEdit'">
+                    <ng-container *ngIf="(val.key != 8 && val.key != 9) ; else dateFields">
+                      <span>{{val.value}}</span>
+                    </ng-container>
+                    <ng-template #dateFields>
+                      <input type="date" (change)="changeDates(i,$event,val.key)" class="input-para" [value]="val.value">
+                    </ng-template>
+                  </div>
+                  <div *ngIf="currentView=='addItemstoHeirachy'">
+                    <span *ngIf="val.key!=='username'" > {{val.value}}</span>
+                  </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="dataGridData.length == 0" class="no-record">No Records Found</div>
+      <div *ngIf="currentView != 'MenuItemBuildEdit'" style="display: -webkit-inline-box;" class="rowsSelect">
+        <p>Rows: </p>
+        <select style="margin-left:10px;" [(ngModel)]="search.pageSize" [disabled]= "search.total < 10 " (change)="changePageSize()">
+          <option [value]="10">10</option>
+          <option [value]="15">15</option>
+          <option [value]="20">20</option>
+        </select>
+        <p *ngIf="currentView !== 'users'" style="margin-left:10px;"> Showing {{search.currentStartIndex}} to
+          {{search.currentEndIndex}} of {{search.total}} entries</p>
+        <p *ngIf="currentView === 'users'" style="margin-left:10px;"> Showing {{search.currentStartIndex}} of
+          {{search.total}} entries</p>
+      </div>
+      <pagination-controls id="paginate2" *ngIf="currentView != 'MenuItemBuildEdit'" class="pagination" (pageChange)="pageChangeEvent($event)"></pagination-controls>
+    </div>
+  </div>

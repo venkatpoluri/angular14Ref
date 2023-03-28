@@ -1,0 +1,1141 @@
+<div class="col d-flex justify-content-end align-items-end filterDisplayButton">
+    <a *ngIf="(currentView !== 'Alignments' && currentView!=='ItemXref' && userCanAddNewElement) && !hideAdd " href='{{componentRouterLink}}' class="btn create-new" role="button">
+        <span class="bi bi-plus-square-fill"></span>&nbsp;
+        <span>{{createButtonText}}</span>
+    </a>
+    <div *ngIf="showMenu" ngbDropdown class="d-inline-block custom-class">
+        <button type="button" class="btn btn-outline-secondary menu-btn" ngbDropdownToggle><i i-bs
+                name="three-dots-vertical"></i></button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="grid-menu-manage">
+            <button ngbDropdownItem value="Select-All" (click)="CheckAllOptions($event)"><i i-bs
+                    name="check-all"></i>Select All</button>
+            <button ngbDropdownItem (click)="openExport(exportDataContext)"> <i i-bs name="kanban"></i>Export</button>
+            <!-- <button ngbDropdownItem *ngIf="currentView==='ItemXref'"  (click)="openEditOv(overLayed)"> <i i-bs name="pen"></i>Edit</button> -->
+            <button ngbDropdownItem *ngIf="currentView==='ItemXref' && userCanEditElement" data-bs-toggle="offcanvas" (click)="itemXrefEdit()" data-bs-target="#editOverlay"> <i i-bs name="pen"></i>Edit</button>
+            <button ngbDropdownItem *ngIf="currentView==='ItemXref' && userCanEditElement" (click)="getDataMultiUpdate()" data-bs-toggle="offcanvas" data-bs-target="#dcMultiUpdate" > <i i-bs name="kanban" ></i>Multi-Row Update</button>
+            <button ngbDropdownItem (click)="openEnd(content)"><i i-bs name="kanban"></i>Manage</button>
+            <button ngbDropdownItem *ngIf="currentView==='Alignments' && userCanEditElement" [routerLink]="'./re-align'"><i i-bs name="kanban"></i>Realign</button>
+            <button *ngIf="userCanDeleteElements  && !hideDelete" ngbDropdownItem (click)="deleteRows(deleteRecords)"><i i-bs name="trash"></i>Delete</button>
+        </div>
+    </div>
+</div>
+<div class="grid">
+  <ngx-skeleton-loader *ngIf="loading" [count]="search.pageSize"></ngx-skeleton-loader>
+    <div class="div-trading" *ngIf="!loading">
+        <div class="filter-manage">
+            <div class="filter-btns">
+                <a *ngFor="let filter of filters" (click)="clearFilter($event,filter, false)"
+                    class="btn btn-outline-secondary filterbtn">{{filter['key']}} : {{filter['value']}}
+                    <i i-bs name="x-circle"></i>
+                </a>
+                <a class="clear-filters" *ngIf="filters.length > 0" (click)="clearFilter($event, undefined, true)">Clear
+                    filters</a>
+            </div>
+        </div>
+        <div class="table-container" style="overflow-x:auto">
+            <table class="data-table" #gridViewTable >
+                <thead>
+                    <tr>
+                        <th class="check-col"><input type="checkbox" [(ngModel)]="selectedAll"
+                                (change)="CheckAllOptions($event)" class="margin-right-5 tableCheckbox">
+                        </th>
+                        <th *ngFor="let header of dataGridHeader; let i = index" scope="col"
+                            class="cl{{i}} font-bold header-cell" id="cl{{i}}" title="{{header.mouseOver}}"
+                            [resizeColumn]="true">{{header.headerTitle}} </th>
+                    </tr>
+                    <tr class="search">
+                        <td></td>
+                        <td *ngFor="let item of dataGridHeader |  keyvalue: asIsOrder let idx = index"
+                            class="cl{{idx}} search-cell">
+                            <ng-container *ngIf="colIsDropDown(item.key);else input">
+                                <select class="form-control" id="{{item.key}}" (blur)="setSearchTerm($event)"  (keyup.enter)="FilterNew($event)">
+                                    <option>Select</option>
+                                    <option *ngFor="let opt of getSelectValues(item.key)" [value]="opt">{{opt}}</option>
+                                </select>
+                            </ng-container>
+                            <ng-template #input>
+                                <input *ngIf="dataGridHeader[item.key].dataType != 'boolean' && dataGridHeader[item.key].dataType != 'enum' " class="form-control" class="form-control" type="text" placeholder="{{item.value.headerTitle}}"
+                                    id="{{item.key}}" (blur)="setSearchTerm($event)" (keyup.enter)="FilterNew($event)">
+                                    <select *ngIf="dataGridHeader[item.key].dataType == 'boolean'&& !dataGridHeader[item.key].enum" class="form-control" (blur)="setSearchTerm($event)" (keydown.enter)="FilterNew($event)" id="{{item.key}}">
+                                      <option value="">Select</option>
+                                      <option value="true">True</option>
+                                      <option value="false">False</option>
+                                    </select>
+                                    <select placeholder="select" *ngIf="dataGridHeader[item.key].dataType == 'boolean' && dataGridHeader[item.key].enum" class="form-control" (blur)="setSearchTerm($event)" (keydown.enter)="FilterNew($event)"  id="{{item.key}}">
+                                      <option *ngFor="let item of dataGridHeader[item.key].enum" [value]="item.value">{{item.key}}</option>
+                                    </select>
+                                    <select *ngIf="dataGridHeader[item.key].dataType == 'enum'" class="form-control" (blur)="setSearchTerm($event)" (keydown.enter)="FilterNew($event)"  id="{{item.key}}">
+                                      <option value="">Select</option>
+                                      <option *ngFor="let val of dataGridHeader[item.key].enum">{{val}}</option>
+                                    </select>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        *ngFor="let data of dataGridData | paginate: { itemsPerPage:  search.pageSize, currentPage: search.pageNumber, totalItems:  search.total }; let i = index">
+                        <td class="check-col">
+                            <input type="checkbox" class="tableCheckbox" id="checked{{i}}"
+                                (change)="checkIfAllSelected()">
+                            <span >
+                                <i-bs name="box-arrow-in-up-right" class="quickLookUpIcon" (click)="openEndQuickLookUp(quickLookupContent,data);"></i-bs>
+                            </span>
+                        </td>
+                        <td *ngFor="let val of data |  keyvalue: asIsOrder | slice:0 ; let idx = index"
+                        class="cl{{idx}} table-data-cell" id="cl{{idx}}">
+                            <a href="javascript:void(0)" class="infoCell"
+                                *ngIf="val.key === '0';else plain_text">
+                                <span  (click)="getViewPath(data,$event,i)" style="text-decoration: underline; margin-left:5px">{{val.value}}</span></a>
+                            <ng-template #plain_text>
+                                <span *ngIf="val.key!=='username' && currentView !== 'Restaurants' && currentView !== 'Alignments' && currentView !='ItemXref'">
+                                    {{val.value}}</span>
+                                <span *ngIf="currentView === 'Restaurants'">
+                                    <span class="infoCell" style="padding-left: 0px;"
+                                        *ngIf="val.key == franchiseeNameIndex && val.value!=null">
+                                        <span style="cursor: pointer;" (click)="openFranchiseeCanvas(franchiseeDataContext , i)">
+                                            <i-bs name="box-arrow-in-up-right"></i-bs>
+                                        </span>
+                                        <span style="text-decoration: underline; margin-left:5px; cursor: pointer;"
+                                            (click)="getInfoPath(i)">{{val.value}}</span>
+                                    </span>
+                                    <span *ngIf="val.key != franchiseeNameIndex"> {{val.value}}  </span>
+                                </span>
+                                <span *ngIf="currentView === 'ItemXref'">
+                                    <span class="infoCell" style="padding-left:0px"
+                                        *ngIf="val.key == itemIndex && val.value !=null">
+                                        <span style="cursor: pointer;" (click)="openItemCanvas(itemDataContext , i)">
+                                            <i-bs name="box-arrow-in-up-right"></i-bs>
+                                        </span>
+                                        <span style="text-decoration: underline; margin-left:5px; cursor: pointer;"
+                                            (click)="getInfoPath(i)">{{val.value}}
+                                        </span>
+                                    </span>
+                                      <span *ngIf="!(val.key == itemIndex)"> {{val.value}}  </span>
+                                </span>
+
+                                <span *ngIf="currentView === 'Alignments'">
+                                  <span class="infoCell" style="padding-left:0px"
+                                  *ngIf="val.key == franchiseeNameIndex && val.value !=null">
+                                  <span style="cursor: pointer;" (click)="openFranchiseeCanvas(franchiseeDataContext , i)">
+                                    <i-bs name="box-arrow-in-up-right"></i-bs>
+                                  </span>
+                                  <span style="text-decoration: underline; margin-left:5px; cursor: pointer;"
+                                            (click)="getInfoPath(i)">{{val.value}}</span>
+                                  </span>
+                                  <span class="infoCell " style=padding-left:0px *ngIf="val.key == dcNameIndex && val.value !=null" >
+                                    <span style="cursor:pointer" (click)="openFacilityCanvas(facilityDataContext,i)"><i-bs name="box-arrow-in-up-right"></i-bs></span>
+                                    <span style="text-decoration: underline; margin-left:5px; cursor: pointer;"
+                                          (click)="getFacilityInfoPath(i)">{{val.value}}</span>
+                                  </span>
+
+                                  <span *ngIf="!(val.key == franchiseeNameIndex || val.key == dcNameIndex)"> {{val.value}}  </span>
+                                </span>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div *ngIf="dataGridData.length == 0" class="no-record">No Records Found</div>
+        <div style="display: -webkit-inline-box;" class="rowsSelect">
+            <p>Rows: </p>
+            <select style="margin-left:10px" [(ngModel)]="search.pageSize" [disabled]= "search.total < 10 "  (change)="changePageSize()">
+                <option [value]="10">10</option>
+                <option [value]="15">15</option>
+                <option [value]="20">20</option>
+            </select>
+            <p style="margin-left:10px;width: 100%;"> Showing {{search.currentStartIndex}} to {{search.currentEndIndex}} of
+                {{search.total}} entries</p>
+        </div>
+        <pagination-controls class="pagination" (pageChange)="pageChangeEvent($event)"></pagination-controls>
+    </div>
+</div>
+
+<ng-template #content let-offcanvas>
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title">Manage Columns</h4>
+        <button type="button" class="circle-button" (click)="ManageColumnData()">
+            <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+    <div class="select-all">
+        <a (click)="manageSelectAll()">{{manageSelect}}</a>
+    </div>
+    <div class="offcanvas-body">
+        <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+            <div class="example-box row" *ngFor="let header of tempDataHeader; let i =index" cdkDrag>
+                <div class="example-custom-placeholder example-box row" *cdkDragPlaceholder>
+                    <div class="col-sm-1"><input type="checkbox" [checked]="header.isShow"
+                            (change)="header.isShow = !header.isShow"></div>
+                    <div class="col-sm-9 manage-header-title" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+                    <div class="col-sm-2"><i i-bs name="list"></i></div>
+                </div>
+                <div class="col-sm-1"><input type="checkbox" [checked]="header.isShow"
+                        (change)="header.isShow = !header.isShow"></div>
+                <div class="col-sm-9 manage-header-title" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+                <div class="col-sm-2"><i i-bs name="list"></i></div>
+            </div>
+        </div>
+        <div class="text-end row" style="padding-top:10px">
+            <div class="col padding-0">
+                <button style="width: 135pt" type="button" class="manage-footer  btn-height-width"
+                    (click)="ManageColumnData()">Cancel</button>
+            </div>
+            <div class="col padding-0 manage-action-button">
+                <button type="button" (click)="UpdateColumn()"
+                    class="manage-footer update-manage  btn-height-width">Update</button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #quickLookupContent>
+    <div class="offcanvas-header pannelHeader">
+        <div class="offcanvas-title pannelHeaderTitle">{{componentName}}</div><br />
+        <div class="circle-button" style="color: white" (click)="CloseQuickLookUp()">
+            <i-bs name="x-circle"></i-bs>
+        </div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="quick-list" style="overflow-y:scroll;">
+            <ng-container class="pannelBody" *ngFor="let header of dataGridHeader let i = index">
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{quickLookupData[i]}}</div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #exportDataContext let-offcanvas>
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title">Export</h4>
+        <button type="button" class="circle-button" (click)="offcanvas.dismiss('Cross click')">
+            <i i-bs name="x-circle"></i></button>
+    </div>
+    <div class="select-all row">
+        <div class="col-sm-7 export-count" style="margin-left:15px;">
+            <p>{{exportCount}} Records Selected</p>
+        </div>
+        <div class="col-md-4 select-all"><a (click)="manageExportSelectAll()">{{manageExportSelect}}</a></div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="example-list" id="export-cols-list" style="overflow-y:scroll;">
+            <ng-container class="pannelBody" *ngFor="let header of dataGridHeader let i = index">
+                <div class="example row pannelDataRow">
+                    <div class="row">
+                        <div class="col-sm-1"><input type="checkbox" name="{{header.attributeName}}" [checked]="header.isExport"
+                                (change)="canExport(header)"></div>
+                        <div class="col-sm-10 pannelDataHeader" title="{{header.mouseOver}}">{{header.headerTitle}}
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+    <div class="export-as-text">Export as
+    </div>
+    <div style="display: -webkit-inline-box; padding-top: 10px;">
+        <select class="export-dropdown">
+            <option>Excel</option>
+        </select>
+    </div>
+    <div class="text-end row" style="padding: 10px 0 10px 0;">
+        <div class="col padding-0">
+            <button style="width: 135pt;" type="button" class="manage-footer btn-height-width"
+                (click)="offcanvas.dismiss('Cross click')">Cancel</button>
+        </div>
+        <div class="col padding-0 manage-action-button" style="margin-right:24px">
+            <button type="button" (click)="ExportData()"
+                class="manage-footer update-manage btn-height-width">Export</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #facilityDataContext>
+  <div class="offcanvas-header pannelHeader" style="display: block">
+    <div class="offcanvas-title pannelHeaderTitle row">
+      <div class="col-md-11" style="padding-left:0;">Facility Information</div>
+      <div class="col-md-1 circle-button" style="color: white" (click)="CloseQuickLookUp()">
+          <i-bs name="x-circle"></i-bs>
+      </div>
+  </div>
+  <div class="offcanvas-title pannelHeaderTitle row" style="margin-top:10px;">
+      <div class="col-md-10" style="padding-left:0;">
+          {{dataFacilityCanvas[0].name}}
+      </div></div>
+  </div>
+  <div class="offcanvas-body">
+    <div class="quick-list" style="overflow-y:scroll;">
+      <ng-container class="pannelBody">
+        <div class="row" style="padding: 8px;">
+          <div class="col-sm-12 header-quick-look">Name</div>
+          <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+              {{dataFacilityCanvas[0].name}}</div>
+      </div>
+        <div class="row" style="padding: 8px;">
+          <div class="col-sm-12 header-quick-look">Number</div>
+          <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+              {{dataFacilityCanvas[0].num}}</div>
+      </div>
+      <div class="row" style="padding: 8px;">
+        <div class="col-sm-12 header-quick-look">Externals</div>
+        <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+            {{dataFacilityCanvas[0].externalOid}}</div>
+    </div>
+    <div class="row" style="padding: 8px;">
+      <div class="col-sm-12 header-quick-look">Role</div>
+      <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+          {{dataFacilityCanvas[0].type}}</div>
+  </div>
+  <div class="row" style="padding: 8px;">
+    <div class="col-sm-12 header-quick-look">Status</div>
+    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+        {{dataFacilityCanvas[0].active}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Trading Partner Id</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].tradingPartnerId}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">TradingPartnerName</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].tradingPartnerName}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Address Type</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].addressType}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Address 1</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].address_1}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Address 2</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].address_2}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">City</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].city}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">State Type</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].stateType}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">State</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].state}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">State Code</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].stateCode}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Postal Code</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].postalCode}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Country</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].countryName}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Country Code</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].countryCode}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Number</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].num}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Address Primary</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].isPostalPrimary}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Phone Type</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].phoneType}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Phone Country Code</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].phoneCountryCode}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Phone Code</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].areaCode}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Phone</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].phoneNumber}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Phone Extension</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].phoneExtention}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Is Primary</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].isPhonePrimary}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Do Not Contact</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].isPhoneDoNotContact}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Email Type</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].emailType}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Email</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].email}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Is Primary</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].isEmailPrimary}}</div>
+</div>
+<div class="row" style="padding: 8px;">
+  <div class="col-sm-12 header-quick-look">Do Not Contact</div>
+  <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+      {{dataFacilityCanvas[0].isEmailDoNotContact}}</div>
+</div>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #franchiseeDataContext>
+    <div class="offcanvas-header pannelHeader" style="display: block;">
+        <div class="offcanvas-title pannelHeaderTitle row">
+            <div class="col-md-11" style="padding-left:0;">Franchisee Information</div>
+            <div class="col-md-1 circle-button" style="color: white" (click)="CloseQuickLookUp()">
+                <i-bs name="x-circle"></i-bs>
+            </div>
+        </div>
+        <div class="offcanvas-title pannelHeaderTitle row" style="margin-top:10px;">
+            <div class="col-md-10" style="padding-left:0;">
+                {{dataFranchiseCanvas?.name}}
+            </div></div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="quick-list" style="overflow-y:scroll;">
+            <ng-container class="pannelBody">
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Franchisee #</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.num}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Franchisee Name</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.name}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Franchisee Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.type}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Address Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.addressType}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Address 1</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.address_1}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Address 2</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.address_2}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">City</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.city}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">State Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.stateType}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">State</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.state}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">State Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.stateCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Postal Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.postalCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Country</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.countryName}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Country Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.countryCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Address Primary</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.isPostalPrimary}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Address Do Not Contact</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.isDoNotContact}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.phoneType}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Country Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.phoneCountryCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.areaCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.phoneNumber}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Extension</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.phoneExtension}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Is Primary</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.isPhonePrimary}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Do Not Contact</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.isPhoneDoNotContact}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Email Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.emailType}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Email</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.email}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Email Do Not Contact</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.isEmailDoNotContact}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Chain Provided Number</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.chainProvidedNumber}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Registration Date</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.registrationDate}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Status</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataFranchiseCanvas?.status}}</div>
+                </div>
+
+            </ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #itemDataContext>
+    <div class="offcanvas-header pannelHeader" style="display: block;">
+        <div class="offcanvas-title pannelHeaderTitle row">
+            <div class="col-md-11" style="padding-left:0;">Item Information</div>
+            <div class="col-md-1 circle-button" style="color: white" (click)="CloseQuickLookUp()">
+                <i-bs name="x-circle"></i-bs>
+            </div>
+        </div>
+        <div class="offcanvas-title pannelHeaderTitle row" style="margin-top:10px;">
+            <div class="col-md-10" style="padding-left:0;">
+                {{dataItemCanvas?.name}}
+            </div></div>
+    </div>
+    <div class="offcanvas-body">
+        <div class="quick-list" style="overflow-y:scroll;">
+            <ng-container class="pannelBody">
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Item #</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.num}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Item Name</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.name}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Buyer Id</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.buyerId}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Attribute Type</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.attributeType}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Chain Branded</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.is_Branded}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">GTIN</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.gtinCase}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">GTIN Inner</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.gtinInner}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">GL Code</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.glCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Status</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.stateCode}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Units Per Package</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.unitsPerPackage}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Units Per Package Low</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.unitsPerPackageRangeLow}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Units Per Package High</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.unitsPerPackageRangeHigh}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Units Per Package UOM</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.unitsPerPackageUom}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">DC Min Shelf Life</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.dcMinShelfLife}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">DC Min Shelf Life UOM</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.dcMinShelfLifeUOM}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Inner Units Per Package</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.innerPackUnitsPerPackage}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Inner Units Per Package UOM</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.innerPackUnitsPerPackageUOM}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Rest Min Shelf Life</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.restMinShelfLife}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Rest Min Shelf Life UOM</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.restMinShelfLifeUOM}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Is Master Case</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.isMasterCase}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Phone Do Not Contact</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.isDistributionFeeApplied}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Is Auditable</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.isAuditable}}</div>
+                </div>
+                <div class="row" style="padding: 8px;">
+                    <div class="col-sm-12 header-quick-look">Is Required Invoice File</div>
+                    <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">
+                        {{dataItemCanvas?.isRequiredInInvoiceFile}}</div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #deleteRecords let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title"></h4>
+        <button type="button" class="circle-button" (click)="modal.dismiss('Cross click')">
+            <i i-bs name="x-circle"></i></button>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex justify-content-center">
+            <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+            </i-bs>
+        </div>
+        <div class="d-flex justify-content-center sure-div">
+            <p>Are you sure you want to delete?</p>
+        </div>
+        <div class="d-flex justify-content-center warning-div">
+            <h4 class="name">{{DeleteCount}} {{currentView}}</h4>
+        </div>
+        <p style="margin-left: 30px">This Operation cannot be undone</p>
+        <div class="warning-box" style="margin-left: 30px">
+            <div>
+                <p>
+                    <i-bs name="arrow-right-short"></i-bs>{{componentName}} Info will be permanently deleted.
+                </p>
+                <p>
+                    <i-bs name="arrow-right-short"></i-bs>All the data associated will be deleted.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer two-btn-modal-footer">
+        <button class="manage-footer btn-height-width padding-top-5"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="manage-footer update-manage btn btn-height-width padding-top-5"
+            data-dismiss="modal" (click)="DeleteAllRecords()">Yes, Delete </button>
+    </div>
+</ng-template>
+
+<ng-template #alignmentContext>
+    <app-restaurant-align [restaurantIds]="restaurantIds" [currentView]="currentView"></app-restaurant-align>
+</ng-template>
+
+<div class="offcanvas offcanvas-end" id="editOverlay" style="width: 45%; overflow-y: auto;" *ngIf="selectedDCitems.length ==1  ">
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title">Item Xref</h4>
+        <button type="button" class="circle-button" data-bs-dismiss="offcanvas">
+            <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+
+    <div class="offcanvas-body shadow-sm m-3 bg-body rounded">
+
+        <div class="row p-2 border-bottom-1px">
+            <div class="col-md-4 font-heading">
+                Field
+            </div>
+            <div class="col-md-4 font-heading">
+                Current Info
+            </div>
+            <div class="col-md-4 font-heading">
+                Proposed Info
+            </div>
+        </div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                DC Name
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.dcName}}
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                DC Item #
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.dcItemNum}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                DC Item Description
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.dcItemName}}
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.dcItemName}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                X Ref Status
+            </div>
+            <div class="col-md-4 font-text">
+                <select [(ngModel)]="changeSetObject.itemXrefStatus.status">
+                  <select value="">Select</select>
+                    <option *ngFor="let sxref of statusXref" [value]="sxref">{{sxref}}</option>
+                </select>
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Item Status
+            </div>
+            <div class="col-md-4 font-text">
+                {{itemStatus}}
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Item #
+            </div>
+            <div class="col-md-4 font-text">
+                <!-- <select (change)="changeItem($event)" [(ngModel)]="xrefDropStatus">
+                    <option value="">Select</option>
+                    <option *ngFor="let xrefDc of itemEnum" [value]="xrefDc.id">{{xrefDc.num}}</option>
+                </select> -->
+
+                <form [formGroup]="XrefEditFormGroup">
+              <nb-layout>
+                <nb-layout-column>
+                  <input matInput formControlName="item" type="text" [matAutocomplete]="auto">
+                  <mat-autocomplete #auto="matAutocomplete">
+                   <mat-option (onSelectionChange)="setItemValue(item)" *ngFor="let item of itemEnum" [value]="item.itemNum">
+                     {{item?.itemNum}}
+                   </mat-option>
+                 </mat-autocomplete>
+                 </nb-layout-column>
+               </nb-layout>
+            </form>
+
+
+                 <!-- <div class="form-select">
+                <ng-autocomplete
+                  [data]="itemEnum"
+                  [searchKeyword]="autoCompleteItemName"
+                  placeholder="Select"
+                  [minQueryLength]=3
+
+                  (opened)="selectExistingItemEventName($event)"
+                  (selected)='selectItemEvent($event)'
+                  (inputChanged)='onChangeSearchItem($event)'
+                  (inputFocused)='onFocusedItem($event)'
+                  [itemTemplate]="chainItemTemplate"
+                  #SingleUpdDititem
+                   id="SingleUpdDititem" [(ngModel)]="xrefDropStatus"   required class="input-para w-100">
+              </ng-autocomplete>
+
+
+                <ng-template #chainItemTemplate let-itmInfo>
+                <a [innerHTML]="itmInfo?.num">{{itmInfo?.num}}</a>
+                </ng-template>
+
+                <ng-template #notFoundChainItemTemplate let-notFoundItem>
+                 <div [innerHTML]="notFoundItem"></div>
+                </ng-template>
+                </div> -->
+
+            </div>
+
+            <div [ngClass]="{'changed': selectedXref.itemNum != itemNum}" class="col-md-4 font-text">
+                <!-- {{selectedXref.itemNum}} -->
+                {{selectedXref.proposedDcItemNum}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Item Description
+            </div>
+            <div class="col-md-4 font-text">
+                {{shortName}}
+            </div>
+            <div class="col-md-4 font-text" [ngClass]="{'changed':shortName != selectedXref?.itemDescription}">
+                <!-- {{selectedXref?.itemDescription}} -->
+                {{selectedXref?.proposedDcItemDescription}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Chain Branded
+            </div>
+            <div class="col-md-4 font-text">
+                {{isBranded}}
+            </div>
+            <div class="col-md-4 font-text" [ngClass]="{'changed':isBranded != selectedXref?.proposedDcItemChainBranded}">
+                {{selectedXref?.proposedDcItemChainBranded}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Item GTIN
+            </div>
+            <div class="col-md-4 font-text">
+                {{gtinCase}}
+            </div>
+            <div class="col-md-4 font-text" [ngClass]="{'changed': gtinCase != selectedXref.proposedDcItemGtin }">
+                {{selectedXref?.proposedDcItemGtin}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                U/M Code
+            </div>
+            <div class="col-md-4 font-text">
+                {{isMasterCase?'EA or CA': 'CA'}}
+            </div>
+            <div class="col-md-4 font-text" [ngClass]="{'changed':isMasterCase?'EA or CA': 'CA' != selectedXref?.proposedDcItemUom}">
+                {{selectedXref?.proposedDcItemUom}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Last Updated By
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.lastLoadedBy}}
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Last Loaded Date
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.lastLoadedDate | date:dateFormat}}
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                X Ref Change Date
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedXref?.lastLoadedOn | date:dateFormat}}
+            </div>
+            <div class="col-md-4 font-text">
+                -
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row px-2">
+            <div class="col-md-4 font-heading">
+                Comments
+            </div>
+            <div class="col-md-8 font-text">
+                <textarea id="some" name="some" row="5" class="w-100" [(ngModel)]="changeSetObject.comments.comment"></textarea>
+                  <div *ngIf="reversedComment.length>0" class="comments">
+                    <p class="font-heading">Previous Comments</p>
+                  <ul>
+                    <li *ngFor="let item of reversedComment;let i=index">
+                      {{item.comment}}
+                  </li>
+                  </ul>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex flex-row-reverse mb-3">
+        <div>
+            <button data-bs-dismiss="offcanvas" class="me-3 btn-height-width" type="reset" (click)="CancelUpdate()" >Cancel</button>
+            <button class="update-manage btn-height-width me-3" (click)="updateChangeSet()">OK</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="offcanvas offcanvas-end" id="dcMultiUpdate" style="width: 45%;" *ngIf="selectedDCitems.length > 0">
+    <div class="offcanvas-header">
+        <h4 class="offcanvas-title">Multi Update Xref</h4>
+        <button type="button" class="circle-button" data-bs-dismiss="offcanvas">
+            <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+
+    <div class=" shadow-sm m-3 bg-body rounded">
+        <div class="row p-3 border-bottom-1px">
+            <div class="col-md-4 font-heading">
+                XRef Status
+            </div>
+            <div class="col-md-4 font-heading">
+                Item #
+            </div>
+            <div class="col-md-4 font-heading">
+                Item Description
+            </div>
+        </div>
+
+        <div class="row p-3">
+            <div class="col-md-4 font-heading">
+                <select [(ngModel)]="statusOfChangeSet">
+                    <option *ngFor="let sxref of statusXref" [value]="sxref">{{sxref}}</option>
+                </select>
+            </div>
+            <div class="col-md-4 font-text">
+                <!-- <select [(ngModel)]="selectNum" (change)="selectingValueMulti()">
+                    <option *ngFor="let nums of multiUpdateNum" [value]="nums.num" >{{nums.num}}</option>
+                </select> -->
+                <div class="form-select">
+                    <ng-autocomplete
+                      [data]="itemEnum"
+                      [searchKeyword]="autoCompleteItemName"
+                      placeholder="Select"
+                      [minQueryLength]=3
+                      (selected)='selectItemEvent($event)'
+                      (inputChanged)='onChangeSearchItem($event)'
+                      (inputFocused)='onFocusedItem($event)'
+                      [itemTemplate]="chainItemTemplate"
+                      #multiUpditem
+                       id="multiUpditem" [(ngModel)]="selectNum"   required class="input-para w-100">
+                  </ng-autocomplete>
+
+                    <ng-template #chainItemTemplate let-itmInfo>
+                    <a [innerHTML]="itmInfo?.num">{{itmInfo?.num}}</a>
+                    </ng-template>
+
+                    <ng-template #notFoundChainItemTemplate let-notFoundItem>
+                     <div [innerHTML]="notFoundItem"></div>
+                    </ng-template>
+                    </div>
+
+
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedItem?.name}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row p-3">
+            <div class="col-md-4 font-heading">
+                GTIN
+            </div>
+            <div class="col-md-4 font-heading">
+                U/M Code
+            </div>
+            <div class="col-md-4 font-heading">
+                Is Chain Branded
+            </div>
+        </div>
+        <div class="row px-3 pb-3">
+            <div class="col-md-4 font-text">
+                {{selectedItem?.gtinCase}}
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedItem?.isMasterCase?"EA or CA":"CA"}}
+            </div>
+            <div class="col-md-4 font-text">
+                {{selectedItem?.isBranded}}
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="row p-3">
+            <div class="col-md-4 font-heading" >
+                Comments
+            </div>
+            <div class="col-md-8 font-text">
+                <textarea id="some" name="some" row="5" class="w-100" [(ngModel)]="commentsOfChangeSet"></textarea>
+            </div>
+        </div>
+        <div class="border-bottom-1px border-width-child"></div>
+
+        <div class="d-flex flex-row-reverse my-3">
+            <div>
+                <button data-bs-dismiss="offcanvas" class="me-3 btn-height-width" (click)="CancelUpdate()">Cancel</button>
+                <button class="update-manage btn-height-width me-3" (click)="multiUpdateChangeSet()">OK</button>
+            </div>
+
+        </div>
+    </div>
+</div>

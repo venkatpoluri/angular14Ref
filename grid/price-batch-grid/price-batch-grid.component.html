@@ -1,0 +1,71 @@
+
+<div style="display: flex; float:right;">
+  <button *ngIf="batchIsValid()" type="button" class="btn btn-font btn-outline-success" (click)="updatePricing()">
+    <i i-bs name="tags"></i>
+    Update pricing 
+  </button>
+</div>
+<div class="grid">
+ 
+    <ngx-skeleton-loader *ngIf="buildingGrid" [count]="pageSize"></ngx-skeleton-loader>
+    <div class="div-trading" *ngIf="!buildingGrid">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th *ngFor="let header of showHeaders" scope="col" class="font-bold header-cell"
+                title="{{header}}">{{header}} </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let data of priceBatchItems | paginate: { itemsPerPage:  pageSize, currentPage: pageNumber, totalItems:  priceBatchItems.length }; let i = index">
+              <td class="table-data-cell"
+                *ngFor="let item of data | filterHeader: headers| keyvalue: asIsOrder">
+                <ng-container>
+                    <div *ngIf="isEditable(data, item.key);else plain_text">
+                      <input *ngIf="item.key !== 'UOM' && item.key !== 'InvoiceFOB'" class="form-control form-control-sm" (change)="updateData(data, item.key, $event)" [type]="inputType(item.key)" [min]="getMin(item.key)" [(ngModel)]="item.value"/>
+                      <input *ngIf="item.key === 'InvoiceFOB'" class="form-control form-control-sm" [disabled]="true"  [value]="getInvoiceFOB(data)"/>
+                      
+                      
+                      <select *ngIf="item.key === 'UOM'" [(ngModel)]="item.value" (change)="updateData(data, item.key, $event)">
+                        <option *ngFor="let uom of unitsOfMeasure" [value]="uom">{{uom}}</option>
+                      </select>
+                    </div>
+                    <ng-template #plain_text>
+                  
+                      <span *ngIf="isValid(data, item.key); else validation_error"> {{
+                          getValue(data, item.key)
+                      }}
+            
+                    </span>
+                      <ng-template #validation_error>
+                        <span class="validation-error" placement="end" [ngbTooltip]="validationText(data, item.key)"> {{item.value}}</span>
+                      </ng-template>
+                    </ng-template>
+                  </ng-container>
+                </td>
+              <td>
+                <div *ngIf="data.LoadingValidation"   class="spinner-border spinner-border-sm" role="status"></div>
+                  <button  type="button" class="btn btn-sm btn-font btn-outline-dark"  *ngIf="data.isEditing && !data.LoadingValidation" (click)="reValidate(data,$event);data.isEditing = false">  <i class="bi bi-check2"></i></button>
+                  <button  type="button" class="btn btn-sm btn-font btn-outline-dark"  *ngIf="!data.isEditing && !data.LoadingValidation" (click)="data.isEditing= true">  <i class="bi bi-pencil"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div *ngIf="priceBatchItems.length == 0" class="no-record">No Records Found</div>
+      <div style="display: -webkit-inline-box;" class="rowsSelect">
+        <p>Rows: </p>
+        <select style="margin-left:10px;" [(ngModel)]="pageSize" [disabled]="priceBatchItems.length < 10"
+          (change)="changePageSize()">
+          <option [value]="10">10</option>
+          <option [value]="15">15</option>
+          <option [value]="20">20</option>
+        </select>
+        <p style="margin-left:10px;width: 100%;"> Showing {{currentStartIndex}} to
+          {{currentEndIndex}} of {{priceBatchItems.length}} entries</p>
+      </div>
+      <pagination-controls class="pagination" (pageChange)="pageChangeEvent($event)"></pagination-controls>
+    </div>
+  </div>

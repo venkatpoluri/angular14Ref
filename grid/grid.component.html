@@ -1,0 +1,499 @@
+<div class="col d-flex justify-content-end align-items-end filterDisplayButton">
+  <button *ngIf="currentView==='users'" class="btn apply-filter" (click)="applyfilter($event)"><i i-bs name="funnel-fill"></i>&nbsp;&nbsp;Apply
+    Filters</button>
+    <a  *ngIf="createButtonText!=='' && currentView!=='Franchisees' && currentView!=='PricingComponent' && currentView!=='menu-item-build' && currentView!='base-markup' && !hideAdd && userCanAddNewElement" href='{{componentRouterLink}}' class="btn create-new"
+    role="button">
+    <span class="bi bi-plus-square-fill"></span>&nbsp;
+    <span>{{createButtonText}}</span>
+  </a>
+
+<a *ngIf="currentView=='menu-item-build' && userCanAddNewElement" class="btn create-new"
+    role="button" (click)="openMenuItemBuildCanvas(menuItemBuildCanvas)">
+   <span class="bi bi-plus-square-fill"></span>&nbsp;
+    <span>{{createButtonText}}</span>
+  </a>
+  <a *ngIf="currentView=='PricingComponent' && userCanAddNewElement" class="btn create-new"
+    role="button" (click)="openPriceComponentCanvas(PricingComponent)">
+   <span class="bi bi-plus-square-fill"></span>&nbsp;
+    <span>{{createButtonText}}</span>
+  </a>
+<a *ngIf="currentView=='base-markup' && userCanAddNewElement" class="btn create-new"
+    role="button" (click)="openBaseMarkupCanvas(addBasemarkupContext)">
+   <span class="bi bi-plus-square-fill"></span>&nbsp;
+    <span>{{createButtonText}}</span>
+  </a>
+  <div *ngIf="currentView==='Franchisees' && userCanAddNewElement && !hideAdd" ngbDropdown class="d-inline-block">
+    <a *ngIf="userCanAddNewElement" class="btn create-new chase" role="button" ngbDropdownToggle>
+      <span class="bi bi-plus-square-fill"></span>&nbsp;
+      <span>Add New</span>
+    </a>
+    <div ngbDropdownMenu>
+      <a ngbDropdownItem class="list-img" [routerLink]="['/franchise/create/info']"><img class="img"
+          src="../../../../assets/menu-icons/icon-trading partner.png" /> Franchisee</a>
+      <a ngbDropdownItem class="list-img" [routerLink]="['/franchise/restaurant/create/']"><img class="img"
+          src="../../../../assets/menu-icons/icon-facility.png" /> Restaurant</a>
+      <a ngbDropdownItem class="list-img" [routerLink]="['/trading-partners/contact/', 'create']"><img class="img"
+          src="../../../../assets/menu-icons/icon-contact.png" /> Contact</a>
+    </div>
+  </div>
+
+  <div *ngIf="showMenu" ngbDropdown class="d-inline-block custom-class">
+    <button type="button" class="btn btn-outline-secondary menu-btn" ngbDropdownToggle><i i-bs
+        name="three-dots-vertical"></i></button>
+    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="grid-menu-manage">
+      <button ngbDropdownItem value="Select-All" *ngIf="currentView!='ItemLandedCost'" (click)="CheckAllOptions($event)"><i i-bs name="check-all"></i>Select
+        All</button>
+      <button ngbDropdownItem *ngIf="currentView === 'MenuItems' && userCanEditElements" type="button" (click)="setItemIds()"
+        data-bs-toggle="offcanvas" data-bs-target="#offcanvasMenuItem"><i i-bs name="check-all"></i>Multi-row
+        Update</button>
+      <button ngbDropdownItem (click)="openExport(exportDataContext)"> <i i-bs name="kanban"></i>Export</button>
+      <button  ngbDropdownItem (click)="openEnd(content)"><i i-bs name="kanban"></i>Manage</button>
+      <button ngbDropdownItem *ngIf="currentView === 'Items' && userCanEditElements" type="button" (click)="setItemIds()"
+        data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"><i i-bs name="check-all"></i>Multi-row
+        Update</button>
+      <!-- <button ngbDropdownItem *ngIf="currentView === 'Restaurants' && userCanEditElements"
+        (click)="openAlignmentCanvas(alignmentContext)"><i i-bs name="kanban"></i>Realign</button> -->
+      <button ngbDropdownItem (click)="editPlateCostPeriodOveralay(editPlateCostTemplate)"
+        *ngIf="currentView === 'PlateCostPeriod' && userCanEditElements"><i i-bs name="pen"></i>Edit</button>
+        <button ngbDropdownItem *ngIf="currentView === 'FacilitySupplierItems' && userCanEditElements" type="button" (click)="setItemIds()" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSupplier" id="btnmultiupdateSupplierItem" ><i i-bs name="check-all"></i>Multi-row Update</button>
+        <button ngbDropdownItem *ngIf="currentView==='menu-item-build' && userCanEditElements" (click)="setSelectedMenuItemBuild()"
+        data-bs-toggle="offcanvas" data-bs-target="#offcanvasEditMenuItemBuild"><i i-bs name="pen"></i>Edit</button>
+        <button ngbDropdownItem *ngIf="uri.includes('markup/base-markup') && userCanAddNewElement" type="button" (click)="addBaseMarkup(addBaseMarkUp,1)"><i i-bs name="check-all"></i>Add Base Markup</button>
+        <button ngbDropdownItem *ngIf="uri.includes('markup/base-markup') && userCanEditElements" type="button" (click)="addBaseMarkup(addBaseMarkUp,2)"><i i-bs name="check-all"></i>Edit</button>
+      <button *ngIf="userCanDeleteElements && !hideDelete" ngbDropdownItem (click)="deleteRows(deleteRecords)"><i i-bs
+          name="trash"></i>{{currentView=='menu-item-build'?'Remove':'Delete'}}</button>
+      <button ngbDropdownItem *ngIf="currentView === 'AlternativeItems' && userCanEditElements"
+        (click)="openAlternativeItemSequenceCanvas(alternativeItemSequenceContext)"><i i-bs
+          name="kanban"></i>Sequence</button>
+          <button ngbDropdownItem *ngIf="currentView==='heirarchy' && userCanAddNewElement" type="button" (click)="openHeirarchy(addItemToHeirarchyCanvas)"><i i-bs name="check-all"></i>Add {{classificationType}}</button>
+      <button ngbDropdownItem *ngIf="currentView === 'AlternativeItems' && userCanAddNewElement"
+        (click)="openAddAlternativeItemSequenceCanvas(addAlternativeItemSequenceContext)">
+        <i i-bs name="building"></i>
+        Add Alternate Item</button>
+      <button ngbDropdownItem *ngIf="currentView === 'AlternativeItems' && userCanAddNewElement"
+        (click)="openEditAlternatItem(editAlternateItem)">
+        <i i-bs name="pen"></i>
+        Edit Alternate Item</button>
+        <button ngbDropdownItem (click)="openEditBaseMarkupCanvas(editBasemarkupContext)"
+        *ngIf="currentView === 'base-markup' && userCanEditElements"><i i-bs name="pen"></i>Edit</button>
+        <button ngbDropdownItem *ngIf="extend"
+        (click)="extendSelected()">
+        <i i-bs name="fast-forward"></i>Extend</button>
+
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <ngx-skeleton-loader *ngIf="loading" [count]="search.pageSize"></ngx-skeleton-loader>
+
+  <div class="div-trading" *ngIf="!loading">
+    <div class="filter-manage">
+      <div class="filter-btns">
+        <a *ngFor="let filter of filters" (click)="clearFilter($event,filter, false)"
+          class="btn btn-outline-secondary filterbtn">{{filter['key']}} : {{filter['value']}}
+          <i i-bs name="x-circle"></i>
+        </a>
+        <a class="clear-filters" *ngIf="filters.length>0" (click)="clearFilter($event, undefined, true)">Clear
+          filters</a>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="data-table" #gridViewTable>
+        <thead>
+          <tr *ngIf="currentView !== 'users'">
+            <th  class="check-col"><input *ngIf="currentView!='ItemLandedCost'" type="checkbox" [(ngModel)]="selectedAll" (change)="CheckAllOptions($event)"
+                class="margin-right-5 tableCheckbox" class="margin-right-5 ">
+            </th>
+            <th *ngFor="let header of dataGridHeader; let i = index" scope="col" class="cl{{i}} font-bold header-cell"
+              id="cl{{i}}" title="{{header.mouseOver}}" [resizeColumn]="true">{{header.headerTitle}} </th>
+          </tr>
+          <tr *ngIf="currentView === 'users'">
+            <th class="check-col"><input type="checkbox" [(ngModel)]="selectedAll" (change)="CheckAllOptions($event)"
+                class="margin-right-5 ">
+            </th>
+            <th *ngFor="let header of dataGridHeader; let i = index" scope="col" id="cl{{i}}" class="cl{{i}} font-bold"
+              title="{{header}}">{{header}} </th>
+          </tr>
+          <tr class="search" *ngIf="currentView === 'users'">
+            <td></td>
+            <td *ngFor="let item of dataGridData[0] |  keyvalue: asIsOrder | slice: 1 ;">
+              <ng-container *ngIf="colIsDropDown(item.key);else input">
+                <select class="form-control" id="{{item.key}}" (blur)="setSearchTerm($event)">
+                  <option>Select</option>
+                  <option *ngFor="let opt of getSelectValues(item.key)" [value]="opt">{{opt}}</option>
+                </select>
+              </ng-container>
+              <ng-template #input>
+                <input class="form-control" type="text" placeholder="{{item.key}}" id="{{item.key}}"
+                  (blur)="setSearchTerm($event)">
+              </ng-template>
+            </td>
+          </tr>
+          <tr class="search" *ngIf="currentView !== 'users'">
+            <td></td>
+            <td *ngFor="let item of dataGridHeader |  keyvalue: asIsOrder let idx = index"
+              class="cl{{idx}} search-cell">
+              <ng-container *ngIf="colIsDropDown(item.key);else input">
+                <select class="form-control" id="{{item.key}}" (blur)="setSearchTerm($event)" (keyup.enter)="FilterNew($event)">
+                  <option>Select</option>
+                  <option *ngFor="let opt of getSelectValues(item.key)" [value]="opt">{{opt}}</option>
+                </select>
+              </ng-container>
+              <ng-template #input>
+                <input
+                  *ngIf="dataGridHeader[item.key].dataType != 'boolean' && dataGridHeader[item.key].dataType != 'enum' && dataGridHeader[item.key].dataType != 'date' "
+                  class="form-control" type="text" placeholder="{{item.value.headerTitle}}" id="{{item.key}}"
+                  (blur)="setSearchTerm($event)" (keyup.enter)="FilterNew($event)">
+                <input *ngIf="dataGridHeader[item.key].dataType == 'date'" type="date"
+                class="form-control" placeholder="{{item.value.headerTitle}}" id="{{item.key}}"
+                (blur)="setSearchTerm($event)" (keyup.enter)="FilterNew($event)">
+                <select *ngIf="dataGridHeader[item.key].dataType == 'boolean'&& !dataGridHeader[item.key].enum"
+                  class="form-control" (blur)="setSearchTerm($event)"  (keydown.enter)="FilterNew($event)" id="{{item.key}}">
+                  <option value="">Select</option>
+                  <option value="true">True</option>
+                  <option value="false">False</option>
+                </select>
+                <select placeholder="select"
+                  *ngIf="dataGridHeader[item.key].dataType == 'boolean' && dataGridHeader[item.key].enum"
+                  class="form-control" (blur)="setSearchTerm($event)" (keydown.enter)="FilterNew($event)" id="{{item.key}}">
+                  <option *ngFor="let item of dataGridHeader[item.key].enum" [value]="item.value">{{item.key}}</option>
+                </select>
+                <select *ngIf="dataGridHeader[item.key].dataType == 'enum'" class="form-control"
+                  (blur)="setSearchTerm($event)" (keydown.enter)="FilterNew($event)" id="{{item.key}}">
+                  <option value="">Select</option>
+                  <option *ngFor="let val of dataGridHeader[item.key].enum">{{val}}</option>
+                </select>
+              </ng-template>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let data of dataGridData | paginate: { itemsPerPage:  search.pageSize, currentPage: search.pageNumber, totalItems:  search.total }; let i = index">
+
+            <td class="check-col">
+              <input type="checkbox" *ngIf="currentView!='ItemLandedCost'" class="tableCheckbox" id="checked{{i}}" (change)="checkIfAllSelected()">
+              <span *ngIf="currentView !== 'users' && currentView !== 'supplierItemInfo' && currentView !== 'menu-item-build'">
+                <i-bs name="box-arrow-in-up-right" class="quickLookUpIcon"
+                  (click)="openEndQuickLookUp(quickLookupContent,data);"></i-bs>
+              </span>
+            </td>
+            <td
+              *ngFor="let val of data |  keyvalue: asIsOrder | slice:currentView !== 'users' ? 0 : 1 ; let idx = index"
+              class="cl{{idx}} table-data-cell" id="cl{{idx}}">
+              <ng-container *ngIf="val.key!=='roles';else roles">
+                <a href="javascript:void(0)" class="infoCell" (click)="getViewPath(data,$event,i)"
+                  *ngIf="(val.key === '0' || val.key === 'name') && currentView !== 'supplierItemInfo' && currentView !== 'menu-item-build' && currentView !== 'MarkUps';else plain_text">
+                  {{val.value}}</a>
+                <ng-template #plain_text>
+                  <span *ngIf="val.key!=='username'"> {{val.value}}</span>
+                </ng-template>
+              </ng-container>
+              <ng-template #roles>
+
+                <ul *ngFor="let role of getArray(val.value)" class="buttons">
+                  <li *ngIf="isInGroup(role.tenant,tenant.conceptKey)">
+                    <div class="btn-group btn-roles">
+                      <button class="btn  tenant">{{role.tenant}}</button>
+                      <button class="btn role">{{role.roles}}</button>
+                    </div>
+
+                  </li>
+                </ul>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="dataGridData.length == 0" class="no-record">No Records Found</div>
+    <div style="display: -webkit-inline-box;" class="rowsSelect">
+      <p>Rows: </p>
+      <select style="margin-left:10px;" [(ngModel)]="search.pageSize" [disabled]="search.total < 10 "
+        (change)="changePageSize()">
+        <option [value]="10">10</option>
+        <option [value]="15">15</option>
+        <option [value]="20">20</option>
+      </select>
+      <p *ngIf="currentView !== 'users'" style="margin-left:10px;width: 100%;"> Showing {{search.currentStartIndex}} to
+        {{search.currentEndIndex}} of {{search.total}} entries</p>
+      <p *ngIf="currentView === 'users'" style="margin-left:10px;width: 100%;"> Showing {{search.total}} entries</p>
+    </div>
+    <pagination-controls class="pagination" (pageChange)="pageChangeEvent($event)"></pagination-controls>
+  </div>
+</div>
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title">Manage Columns</h4>
+    <button type="button" class="circle-button" (click)="ManageColumnData()">
+      <i-bs name="x-circle"></i-bs>
+    </button>
+  </div>
+  <div class="select-all">
+    <a (click)="manageSelectAll()">{{manageSelect}}</a>
+  </div>
+  <div class="offcanvas-body">
+    <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+      <div class="example-box row" *ngFor="let header of tempDataHeader; let i =index" cdkDrag>
+        <div class="example-custom-placeholder example-box row" *cdkDragPlaceholder>
+          <div class="col-sm-1"><input type="checkbox" [checked]="header.isShow"
+              (change)="header.isShow = !header.isShow"></div>
+          <div class="col-sm-9 manage-header-title" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+          <div class="col-sm-2"><i i-bs name="list"></i></div>
+        </div>
+        <div class="col-sm-1"><input type="checkbox" [checked]="header.isShow"
+            (change)="header.isShow = !header.isShow"></div>
+        <div class="col-sm-9 manage-header-title" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+        <div class="col-sm-2"><i i-bs name="list"></i></div>
+      </div>
+    </div>
+    <div class="text-end row" style="padding-top:10px">
+      <div class="col padding-0">
+        <button style="width: 135pt;color:1px solid #484848" type="button" class="manage-footer btn-height-width"
+          (click)="ManageColumnData()">Cancel</button>
+      </div>
+      <div class="col padding-0 manage-action-button">
+        <button type="button" (click)="UpdateColumn()"
+          class="manage-footer update-manage btn-height-width">Update</button>
+
+      </div>
+
+    </div>
+  </div>
+</ng-template>
+
+<div class="offcanvas offcanvas-end" style="width: 70%;" id="offcanvasExample" *ngIf="isOpenMultiUpdateItems">
+  <app-multi-update-item [multipleItemIds]="multipleItemIds"> </app-multi-update-item>
+</div>
+<div class="offcanvas offcanvas-end" style="width: 70%;" id="offcanvasMenuItem">
+  <app-multi-update-menuitem [multipleItemIds]="multipleItemIds"> </app-multi-update-menuitem>
+</div>
+<div class="offcanvas offcanvas-end" style="width: 70%;" id="offcanvasSupplier" *ngIf="isOpenMultiUpdateSupplierItems">
+  <app-multi-update [multipleItemIds]="multipleItemIds"></app-multi-update>
+</div>
+<ng-template class="offcanvas-size" #menuItemBuildCanvas >
+   <app-menu-item-build [currentView]="'create'"></app-menu-item-build>
+  </ng-template>
+  <ng-template class="offcanvas-size" #PricingComponent >
+    <app-add-price-component></app-add-price-component>
+   </ng-template>
+
+<div *ngIf="currentView==='menu-item-build' && isOpenMenuItemBuildEdit" class="offcanvas offcanvas-end" style="width: 70%;"
+  id="offcanvasEditMenuItemBuild"  >
+  <app-menu-item-build [ItmesSelected]="buildItemArray" [currentView]="'edit'"> </app-menu-item-build>
+</div>
+
+<ng-template #addItemToHeirarchyCanvas>
+    <app-add-item-to-heirarchy [nodeId]="currentNode" [type]="classificationType" (OnAddItem)="AddItemToHeirarchy($event)"></app-add-item-to-heirarchy>
+</ng-template>
+<ng-template #addBaseMarkUp let-mod>
+  <app-add-dc-base-markup [currentView]="currentViewForMarkups" [editData]="editBaseMarkUp" [mod]="mod" ></app-add-dc-base-markup>
+</ng-template>
+<ng-template #quickLookupContent>
+  <div class="offcanvas-header pannelHeader">
+    <div class="offcanvas-title pannelHeaderTitle">{{componentName}}</div><br />
+    <div class="circle-button" style="color: white" (click)="CloseQuickLookUp()">
+      <i-bs name="x-circle"></i-bs>
+    </div>
+  </div>
+  <div class="offcanvas-body">
+    <div class="quick-list" style="overflow-y:scroll;">
+      <ng-container class="pannelBody" *ngFor="let header of dataGridHeader let i = index">
+        <div class="row" style="padding: 8px;">
+          <div class="col-sm-12 header-quick-look" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+          <div class="col-sm-12 header-quick-look" style="color: #1D1D1D; margin-top: 7px;">{{quickLookupData[i]}}</div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #exportDataContext let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title">Export</h4>
+    <button type="button" class="circle-button" (click)="offcanvas.dismiss('Cross click')">
+      <i i-bs name="x-circle"></i></button>
+  </div>
+  <div class="select-all row">
+    <div class="col-sm-7 export-count" style="margin-left:15px;">
+      <p>{{exportCount}} Records Selected</p>
+    </div>
+    <div class="col-md-4 select-all"><a (click)="manageExportSelectAll()">{{manageExportSelect}}</a></div>
+  </div>
+  <div class="offcanvas-body">
+    <div class="example-list " id="export-cols-list" style="overflow-y:scroll;">
+      <ng-container class="pannelBody" *ngFor="let header of dataGridHeader let i = index">
+        <div class="example row pannelDataRow">
+          <div class="row">
+            <div class="col-sm-1"><input type="checkbox" name="{{header.attributeName}}" [checked]="header.isExport" (change)="canExport(header)"></div>
+            <div class="col-sm-10 pannelDataHeader" title="{{header.mouseOver}}">{{header.headerTitle}}</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="export-as-text">Export as
+  </div>
+  <div style="display: -webkit-inline-box; padding-top: 10px;">
+    <select class="export-dropdown">
+      <option>Excel</option>
+    </select>
+  </div>
+  <div class="text-end row" style="padding: 10px 0 10px 0;">
+    <div class="col padding-0">
+      <button style="width: 135pt;" type="button" class="manage-footer btn-height-width"
+        (click)="offcanvas.dismiss('Cross click')">Cancel</button>
+    </div>
+    <div class="col padding-0 manage-action-button" style="margin-right:24px">
+      <button type="button" (click)="ExportData()" class="manage-footer update-manage btn-height-width">Export</button>
+    </div>
+
+  </div>
+
+</ng-template>
+
+<ng-template #deleteRecords let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title"></h4>
+    <button type="button" class="circle-button" (click)="modal.dismiss('Cross click')">
+      <i i-bs name="x-circle"></i></button>
+  </div>
+  <div *ngIf="currentView != 'heirarchy' && currentView !='menu-item-build'" class="modal-body">
+    <div class="d-flex justify-content-center">
+      <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+      </i-bs>
+    </div>
+    <div class="d-flex justify-content-center sure-div">
+      <p>Are you sure you want to delete?</p>
+    </div>
+    <div class="d-flex justify-content-center warning-div">
+      <h4 class="name">{{DeleteCount}} {{currentView}}</h4>
+    </div>
+    <p style="margin-left: 30px">This Operation cannot be undone</p>
+    <div class="warning-box" style="margin-left: 30px">
+      <div>
+        <p>
+          <i-bs name="arrow-right-short"></i-bs>{{componentName}} Info will be permanently deleted.
+        </p>
+        <p>
+          <i-bs name="arrow-right-short"></i-bs>All the data associated will be deleted.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="currentView =='menu-item-build'" class="modal-body">
+    <div class="d-flex justify-content-center">
+      <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+      </i-bs>
+    </div>
+    <div class="d-flex justify-content-center sure-div">
+      <p>Are you sure you want to remove the selecte item(s)?</p>
+    </div>
+    <div class="d-flex justify-content-center warning-div">
+      <h4 class="name">{{DeleteCount}} {{currentView}}</h4>
+    </div>
+    <p style="margin-left: 30px">This Operation cannot be undone</p>
+    <div class="warning-box" style="margin-left: 30px">
+      <div>
+        <p>
+          <i-bs name="arrow-right-short"></i-bs>These items will be permanently removed.
+        </p>
+        <p>
+          <i-bs name="arrow-right-short"></i-bs>All the data associated with this menu item build will be affected.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="currentView == 'heirarchy'">
+    <div style="margin-bottom: 15px" class="d-flex justify-content-center sure-div">
+      <p>Are you sure you want to remove the selected {{classificationType}}(s) from <b>{{currentNodeName}}</b></p>
+    </div>
+  </div>
+  <div class="modal-footer two-btn-modal-footer">
+    <button class=" footer-button" (click)="modal.dismiss('Cross click')" style="color: #484848; background: #ffffff">
+      Cancel
+    </button>
+    <button type="button" class=" footer-button" (click)="DeleteAllRecords()"
+      style="background: #2f4e6d; color: #ffffff">
+      Yes, {{currentView != 'menu-item-build'?'Delete':'Remove'}}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #editPlateCostTemplate let-offcanvas let-d="dismiss">
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title">Edit Plate Cost Period</h4>
+    <button type="button" class="circle-button" (click)="d('close')">
+      <i-bs name="x-circle"></i-bs>
+    </button>
+  </div>
+  <div class="offcanvas-body d-flex justify-content-between flex-column h-100">
+    <div class="container-fluid p-0">
+      <div class="row ">
+        <div class="col-md-6">
+          <label for="fromDate" class="lable-input">Begin Date<span class="error">*</span></label>
+          <input type="date" name="fromDate" id="fromDate" class="input-para w-100" max="9999-12-31"
+            [(ngModel)]="platePeriodsForm.from_date">
+        </div>
+        <div class="col-md-6">
+          <label for="fromDate" class="lable-input">End Date</label>
+          <input type="date" name="thruDate" id="fromDate" class="input-para w-100" max="9999-12-31"
+            [(ngModel)]="platePeriodsForm.thru_date">
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between pe-2">
+      <button type="submit" class="cancel-bg update-action me-2 col-md-5 w-50" (click)="d('close')">Cancel</button>
+      <button type="submit" class="update-action col-md-5 w-50" (click)="onSubmitPlateCostPeriod()">Update</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #alignmentContext>
+  <app-restaurant-align [restaurantIds]="restaurantIds" [currentView]="currentView"></app-restaurant-align>
+</ng-template>
+<ng-template #alternativeItemSequenceContext>
+  <app-item-alternative-item-sequence [associatedItems]="associatedItems" [itemId]="parentitemId"
+    [currentView]="currentView"></app-item-alternative-item-sequence>
+</ng-template>
+<ng-template #addAlternativeItemSequenceContext>
+  <app-item-alternative-item-add [associatedItems]="associatedItems" [itemId]="parentitemId"
+    [currentView]="currentView"></app-item-alternative-item-add>
+</ng-template>
+
+
+<ng-template #addBasemarkupContext>
+  <app-add-edit-base-markup  [markUp]="baseMarkupInfo" [isEditing]="false" [currentView]="currentView">
+
+  </app-add-edit-base-markup>
+</ng-template>
+
+<ng-template #editBasemarkupContext>
+  <app-add-edit-base-markup  [markUp]="baseMarkupInfo" [name]=""  [isEditing]="true"  [currentView]="currentView">
+
+  </app-add-edit-base-markup>
+</ng-template>
+
+<ng-template #editAlternateItem let-d="dismiss">
+  <app-edit-alternate-item [dismiss]="d" [alternateItemForm]="editAlternateForm"></app-edit-alternate-item>
+</ng-template>
+<ng-template #errorModal let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Error Messages</h4>
+      <a type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+        <i-bs name="x-circle"></i-bs>
+      </a>
+  </div>
+    <div class="modal-body">
+        <div class="inner-body">
+          <p class="error-message" *ngFor="let error of createErrors">
+              {{error}}
+          </p>
+        </div>
+    </div>
+    <div class="modal-footer two-btn-modal-footer">
+      <button class="btn-height-width cancel-button-color" (click)="modal.dismiss('Cross click')">Ok</button>
+  </div>
+</ng-template>
