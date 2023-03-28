@@ -1,0 +1,1755 @@
+<div class="d-flex justify-content-between" *ngIf="!isEditing">
+  <h3 class="name">{{ tradingPartnerDetails.firstName }}</h3>
+  <div ngbDropdown class="d-inline-block user-menu">
+    <a *ngIf="userCanAddNewElement"
+      class="btn create-new"
+      role="button"
+      ngbDropdownToggle
+      (click)="createNewContanct()"
+    >
+      <span class="bi bi-plus-square-fill"></span>&nbsp;
+      <span>Add New</span>
+    </a>
+    <button *ngIf="userCanEditElement || userCanDeleteElements"
+      type="button"
+      class="btn btn-outline-secondary menu-btn"
+      ngbDropdownToggle
+    >
+      <i i-bs name="three-dots-vertical"></i>
+    </button>
+    <div
+      ngbDropdownMenu
+      aria-labelledby="dropdownBasic1"
+      class="grid-menu-manage"
+    >
+      <button *ngIf="userCanEditElement" ngbDropdownItem (click)="gotoEdit()">
+        <i i-bs name="pencil-square"></i>Edit
+      </button>
+      <button *ngIf="userCanDeleteElements" ngbDropdownItem (click)="opendeleteModal(deletecontact)">
+        <i i-bs name="trash-fill"></i>Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<form class="row main" ngForm #contactForm="ngForm" (ngSubmit)="onSubmit(contactForm)" >
+  <div class=col-md-6>
+    <div class="box">
+      <p class="edit-header">General Information</p>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <label for="first-name"
+              >First Name<span style="color: #cc3f3f">*</span></label
+            >
+            <p *ngIf="!isEditing" class="input-para">
+              {{ tradingPartnerDetails.firstName }}
+            </p>
+            <div *ngIf="isEditing">
+              <input class="input-para" required
+                ngModel
+                #firstName="ngModel"
+                id="first-name"
+                name="fristName"
+                maxlength="30"
+                [(ngModel)]="tradingPartnerDetails.firstName"
+              />
+              <span class="error" *ngIf="(contactForm.submitted || firstName.touched) && firstName.hasError('required')">Enter First Name</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <label for="middle-name">Middle Name</label>
+            <input
+              *ngIf="isEditing"
+              type="text"
+              name="middleName"
+              class="input-para"
+              maxlength="20"
+              [(ngModel)]="tradingPartnerDetails.middleName"
+              id="middle-name"
+            />
+            <p *ngIf="!isEditing" class="input-para">
+              {{ tradingPartnerDetails.middleName }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="last-name"
+              >Last Name<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <input
+                class="input-para"
+                required
+                ngModel
+                #lastName="ngModel"
+                name="last-name"
+                name="lastName"
+                maxlength="30"
+                [(ngModel)]="tradingPartnerDetails.lastName"
+              />
+              <span class="error" *ngIf="(contactForm.submitted || lastName.touched) && lastName.hasError('required')">Enter Last Name</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{ tradingPartnerDetails.lastName }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="suffix"
+              >Suffix<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <select
+              class="input-para"
+              required
+              ngModel
+              #suffix="ngModel"
+              id="suffix"
+              name="suffix"
+              [(ngModel)]="tradingPartnerDetails.suffix"
+            >
+              <option value="" selected>Select</option>
+              <option value="Mr.">Mr.</option>
+              <option value="Mrs.">Mrs.</option>
+            </select>
+            <span class="error" *ngIf="(contactForm.submitted || suffix.touched) && suffix.hasError('required')">Select Suffix</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{ tradingPartnerDetails.suffix }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="title">Title</label>
+            <select
+              *ngIf="isEditing"
+              class="input-para"
+              id="title"
+              name="title"
+              [(ngModel)]="tradingPartnerDetails.title"
+            >
+            <option value="">Select</option>
+              <option *ngFor="let title of titles">{{title}}</option>
+            </select>
+            <p *ngIf="!isEditing" class="input-para">
+              {{ tradingPartnerDetails.title }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <p class="edit-header">Notes</p>
+      <div class="container">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let notes of tradingPartnerDetails.contactDocument.notes; let i = index">
+          <div class='col-md-8'>
+            <label for="notes">Notes</label>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{tradingPartnerDetails.contactDocument?.notes?.[i]?.note}}
+                </p>
+                <input
+                  *ngIf="isEditing"
+                  name="note{{i}}"
+                  [(ngModel)]="tradingPartnerDetails.contactDocument?.notes?.[i].note"
+                  type="textarea"
+                  class="form-control textarea"
+                />
+          </div>
+          <div class="col-md-2"></div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.notes.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removeNote(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.notes.length< 1" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addNewNote()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add New</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <p class="edit-header">Postal Address</p>
+      <div class="container">
+        <ng-container *ngIf="isEditing else viewPostalAddress">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let address of tradingPartnerDetails.contactDocument.postal_addresses;let i = index">
+          <div class="col-md-10">
+            <div class="row">
+          <div class="col-md-4">
+            <label for="type"
+              >Type<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <select
+              class="input-para"
+              name="type{{i}}"
+              required
+              ngModel
+              #type="ngModel"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .type
+              "
+            >
+            <option value="">Select</option>
+              <option
+                [value]="postal"
+                *ngFor="let postal of postalAddressTypes"
+              >
+                {{ postal }}
+              </option>
+            </select>
+            <span class="error" *ngIf="(contactForm.submitted || type.touched) && type.hasError('required')">Select Type</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .type
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-1"
+              >Address 1<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <input
+              class="input-para"
+              id="address-1"
+              name="address1{{i}}"
+              required
+              ngModel
+              #address1="ngModel"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .address_1
+              "
+            />
+            <span class="error" *ngIf="(contactForm.submitted || address1.touched) && address1.hasError('required')">Enter Address 1</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .address_1
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-2">Address 2</label>
+            <div *ngIf="isEditing">
+              <input
+              class="input-para"
+              id="address-2"
+              name="address2{{i}}"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .address_2
+              "
+            />
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .address_2
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="city"
+              >City<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <input
+              class="input-para"
+              required
+              ngModel
+              #city="ngModel"
+              id="city"
+              name="city{{i}}"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .city
+              "
+            />
+            <span class="error" *ngIf="(contactForm.submitted || city.touched) && city.hasError('required')">Enter City</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .city
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="state"
+              >State<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <select #state="ngModel" required name="state_name{{i}}" id="state" class="input-para"  [(ngModel)]="tradingPartnerDetails.contactDocument.postal_addresses[i].state_name">
+                <option selected value="">Select</option>
+                <optgroup label="USA">
+                  <option
+                    *ngFor="let loc of availableGeoLocations.usa.states"
+                    value="{{ loc.state }}"
+                  >
+                    {{ loc.state }}
+                  </option>
+                </optgroup>
+                <optgroup label="Canada">
+                  <option
+                    *ngFor="let loc of availableGeoLocations.canada.states"
+                    value="{{ loc.state }}"
+                  >
+                    {{ loc.state }}
+                  </option>
+                </optgroup>
+                <optgroup label="Mexico">
+                  <option
+                    *ngFor="let loc of availableGeoLocations.mexico.states"
+                    value="{{ loc.state }}"
+                  >
+                    {{ loc.state }}
+                  </option>
+                </optgroup>
+                <optgroup label="China">
+                  <option
+                      *ngFor="let loc of availableGeoLocations.china.states"
+                      value="{{loc.state}}">{{loc.state}}
+                  </option>
+              </optgroup>
+              <optgroup label="Australia">
+                  <option
+                      *ngFor="let loc of availableGeoLocations.australia.states"
+                      value="{{loc.state}}">{{loc.state}}
+                  </option>
+              </optgroup>
+              <optgroup label="Guatemala">
+                  <option
+                      *ngFor="let loc of availableGeoLocations.guatemala.states"
+                      value="{{loc.state}}">{{loc.state}}
+                  </option>
+              </optgroup>
+              <optgroup label="Netherlands">
+                  <option
+                      *ngFor="let loc of availableGeoLocations.netherlands.states"
+                      value="{{loc.state}}">{{loc.state}}
+                  </option>
+              </optgroup>
+              </select>
+            <span class="error" *ngIf="(contactForm.submitted || state.touched) && state.hasError('required')">Select State</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .state_name
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="pcode"
+              >Postal Code<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <input maxlength="10"
+              class="input-para"
+              id="pcode"
+              name="postal_code{{i}}"
+              required
+              ngModel
+
+              #postal="ngModel"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .postal_code
+              "
+            />
+            <span class="error" *ngIf="(contactForm.submitted || postal.touched) && postal.hasError('required')">Enter Postal Code</span>
+
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .postal_code
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="country"
+              >Country<span style="color: #cc3f3f">*</span></label
+            >
+            <div *ngIf="isEditing">
+              <select
+              class=""
+              id="country"
+              name="country_name{{i}}"
+              required
+              ngModel
+              #country="ngModel"
+              [(ngModel)]="
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .country_name
+              "
+            >
+              <option value="">Select</option>
+              <option value="usa">United States of America</option>
+              <option value="canada">Canada</option>
+              <option value="mexico">Mexico</option>
+              <option value="china">China</option>
+              <option value="australia">Australia</option>
+              <option value="guatemala">Guatemala</option>   
+              <option value="netherlands">Netherlands</option>         
+            </select>
+            <span class="error" *ngIf="(contactForm.submitted || country.touched) && country.hasError('required')">Enter City</span>
+            </div>
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                tradingPartnerDetails.contactDocument.postal_addresses[i]
+                  .countryName
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label style="margin-top: 20px" for="countryPrimary">
+              <input
+                class="minority"
+                #phisPrimary="ngModel"
+                type="checkbox"
+                name="countryPrimary{{i}}"
+                id="countryPrimary{{i}}"
+                [value]="
+                  tradingPartnerDetails.contactDocument.postal_addresses[
+                    i
+                  ].is_primary
+                "
+                [(ngModel)]="
+                  tradingPartnerDetails.contactDocument.postal_addresses[
+                    i
+                  ].is_primary
+                "
+                [attr.disabled]="!isEditing ? 'disabled' : null"
+                (click)="changePrimary(tradingPartnerDetails?.contactDocument?.postal_addresses,'postal',i,$event)"
+              />
+              Is Primary</label
+            >
+          </div>
+        </div>
+      </div>
+      <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.postal_addresses.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+        <p  (click)="removePostalAddress(i)" class="delete-button margin-left-15">
+          <i-bs name="trash"></i-bs>
+      </p>
+      </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addNewAddressTypeWithoutPrimary()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Postal Address</span>
+            </p>
+          </div>
+        </div>
+      </ng-container>
+      </div>
+      <ng-template #viewPostalAddress>
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let address of tradingPartnerDetails.contactDocument.postal_addresses | contactsPrimary:'is_primary':true; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+          <div class="col-md-4">
+            <label for="type"
+              >Type<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .type
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-1"
+              >Address 1<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .address_1
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-2">Address 2</label>
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .address_2
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="city"
+              >City<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .city
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="state"
+              >State<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .state_name
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="pcode"
+              >Postal Code<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .postal_code
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="country"
+              >Country<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .countryName
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label style="margin-top: 20px" for="countryPrimary">
+              <input
+                class="minority"
+                #phisPrimary="ngModel"
+                type="checkbox"
+                name="countryPrimary{{i}}"
+                id="countryPrimary{{i}}"
+                [value]="
+                address.is_primary
+                "
+                [(ngModel)]="
+                address.is_primary
+                "
+                [attr.disabled]="!isEditing ? 'disabled' : null"
+                [ngModelOptions]="{standalone: true}"
+
+              />
+              Is Primary</label
+            >
+          </div>
+          <div class="col-md-4">
+            <div class="margin-left-35" *ngIf="tradingPartnerDetails?.contactDocument?.postal_addresses?.length > 1">
+<a class="accordion-button" (click)=hideDivPostal(i) [ngClass]="{ 'collapsed': true }"
+  type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_morePostal'"
+  aria-expanded="true" [attr.aria-controls]="'collapse_morePostal'">
+  <p class="margin-top-13">
+    <a class="more-info">
+      {{tradingPartnerDetails?.contactDocument?.postal_addresses?.length -1}} More
+      <span>
+        <i-bs id="icon-down_postal{{i}}" name="chevron-down"></i-bs>
+        <i-bs id="icon-up_postal{{i}}" style="display: none;" name="chevron-up"></i-bs>
+      </span>
+    </a>
+  </p>
+</a>
+</div>
+        </div>
+      </div>
+
+        </div>
+        </div>
+
+        <div class="row" [id]="'collapse_morePostal'" class="collapse" style="border-bottom: 1px solid #dededf;" *ngFor="let address of tradingPartnerDetails.contactDocument.postal_addresses | contactsPrimary:'is_primary':false; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+          <div class="col-md-4">
+            <label for="type"
+              >Type<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .type
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-1"
+              >Address 1<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .address_1
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="address-2">Address 2</label>
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .address_2
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="city"
+              >City<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .city
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="state"
+              >State<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .state_name
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="pcode"
+              >Postal Code<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .postal_code
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label for="country"
+              >Country<span style="color: #cc3f3f">*</span></label
+            >
+
+            <p *ngIf="!isEditing" class="input-para">
+              {{
+                address
+                  .country_name
+              }}
+            </p>
+          </div>
+          <div class="col-md-4">
+            <label style="margin-top: 20px" for="countryPrimary">
+              <input
+                class="minority"
+                #phisPrimary="ngModel"
+                type="checkbox"
+                name="countryPrimary{{i}}"
+                id="countryPrimary{{i}}"
+                [value]="
+                address.is_primary
+                "
+                [(ngModel)]="
+                address.is_primary
+                "
+                [attr.disabled]="!isEditing ? 'disabled' : null"
+
+              />
+              Is Primary</label
+            >
+          </div>
+
+      </div>
+
+        </div>
+        </div>
+</ng-template>
+
+    </div>
+
+    <div class="box">
+      <p class="edit-header">Connect to Facility</p>
+      <div class="container">
+        <div class="row " style="border-bottom: 1px solid #dededf;" *ngFor="let tpmap of tradingPartnerDetails.contactDocument.connectToEntity.facility;let i = index">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="facility"
+                  >Facility</label
+                >
+                <div *ngIf="isEditing">
+                <div class="form-select">
+                  <ng-autocomplete
+                    [data]="facilities"
+                    [searchKeyword]="autoCompleteFacName"
+                    placeholder="Select"
+                    [minQueryLength]=4
+                    (selected)='selectFacilityEvent($event)'
+                    (customFilter)="selectExistingFacilityEvent($event,tpmap.id)"
+                    (inputChanged)='onChangeSearchFacility($event,tpmap.id)'
+                    (inputFocused)="onChangeSearchFacility($event,tpmap.id)"
+                    [itemTemplate]="tpTemplate"
+                    [notFoundTemplate]="notFoundTpTemplate"
+                    (opened)="selectExistingFacilityEventName($event,tpmap.id)"
+                    [initialValue]="(tpmap.id ===''?'':selectExistingFacilityEventId(tpmap.id))"
+                    ngModel
+                    
+                    name="facility{{i}}"
+                    #facilityName="ngModel"
+                    [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .facility[i].id
+                  "
+                   >
+                </ng-autocomplete>
+
+                  <ng-template #tpTemplate let-tpinfo>
+                  <a [innerHTML]="tpinfo.name"></a>
+                  </ng-template>
+
+                  <ng-template #notFoundTpTemplate let-notFound>
+                  <div [innerHTML]="notFound"></div>
+                  </ng-template>
+                  </div>
+                </div>
+                
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    getFacilityName(
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .facility[i].id
+                    )
+                  }}
+                </p>
+              </div>
+              <div class="col-sm-4">
+                <label class="mb-2">Role Type</label>
+                <div *ngIf="isEditing">
+                  <ngx-bootstrap-multiselect
+                  name="facilityRoleType{{i}}"
+                  #facilityRoleType="ngModel"
+                  
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .facility[i].roles
+                  "
+                  [settings]="selectSettings"
+                  [options]="roleMultiSelect"
+                  (dropdownClosed)="multiSelectOnChange($event)"
+                >
+                </ngx-bootstrap-multiselect>
+                </div>
+                <ul *ngIf="!isEditing" class="list-inline">
+                  <li
+                    *ngFor="
+                      let role of tradingPartnerDetails.contactDocument
+                        .connectToEntity.facility[i].roles
+                    "
+                    class="list-inline-item"
+                  >
+                    {{ role }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+            <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument.connectToEntity?.facility.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+              <p  (click)="removeFacilityEnity(i)" class="delete-button margin-left-15">
+                <i-bs name="trash"></i-bs>
+            </p>
+            </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addFacilityEnity()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Facility</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <p class="edit-header">Connect To Franchisee</p>
+      <div class="container">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let tpmap of tradingPartnerDetails.contactDocument.connectToEntity.franchisee;let i = index">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="franchisee{{i}}"
+                  >Franchisee</label
+                >
+                <div *ngIf="isEditing">
+
+                  <div class="form-select">
+                    <ng-autocomplete
+                      [data]="franchisees"
+                      [searchKeyword]="autoCompleteFrName"
+                      placeholder="Select"
+                      [minQueryLength]=4
+                      (selected)='selectFranchiseeEvent($event)'
+                      (customFilter)="selectExistingFranchiseeEvent($event,tpmap.id)"
+                      (inputChanged)='onChangeSearchFranchisee($event,tpmap.id)'
+                      (inputFocused)="onChangeSearchFranchisee($event,tpmap.id)"
+                      [itemTemplate]="tpTemplate"
+                      [notFoundTemplate]="notFoundTpTemplate"
+                      (opened)="selectExistingFranchiseeEventName($event,tpmap.id)"
+                      [initialValue]="(tpmap.id ===''?'':selectExistingFranchiseeEventId(tpmap.id))"
+                      ngModel
+                      
+                      #frnchiseName="ngModel"
+                      name="franchisee{{i}}"
+                      [(ngModel)]="
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .franchisee[i].id"
+                     >
+                  </ng-autocomplete>
+
+                    <ng-template #tpTemplate let-tpinfo>
+                    <a [innerHTML]="tpinfo.name"></a>
+                    </ng-template>
+
+                    <ng-template #notFoundTpTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                    </ng-template>
+                    </div>
+                
+                </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    getFranchiseName(
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .franchisee[i].id
+                    )
+                  }}
+                </p>
+              </div>
+              <div class="col-sm-4">
+                <label for="roletype" class="mb-2">Role Type</label>
+                <div *ngIf="isEditing">
+                  <ngx-bootstrap-multiselect
+                  name="franchiseeRoleType{{i}}"
+                  #franchiseeRoleType="ngModel"
+                  
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .franchisee[i].roles
+                  "
+                  [settings]="selectSettings"
+                  [options]="roleMultiSelect"
+                  (dropdownClosed)="multiSelectOnChange($event)"
+                >
+                </ngx-bootstrap-multiselect>
+                </div>
+                <ul *ngIf="!isEditing" class="list-inline">
+                  <li
+                    *ngFor="
+                      let role of tradingPartnerDetails.contactDocument
+                        .connectToEntity.franchisee[i].roles
+                    "
+                    class="list-inline-item"
+                  >
+                    {{ role }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument.connectToEntity?.franchisee.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removeFranchiseeEnity(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addFranchiseeEnity()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Franchise</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="box">
+      <p class="edit-header">Phone Number</p>
+
+
+      <div class="container">
+        <ng-container *ngIf="isEditing else viewPhoneAddress">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let phone_num of tradingPartnerDetails.contactDocument.phone_addresses; let i = index">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type">Type<span style="color: #cc3f3f">*</span></label>
+                <div *ngIf="isEditing">
+                  <select
+                  class="input-para"
+                  id="type"
+                  name="phoneType{{i}}"
+                  #phType="ngModel"
+                  required
+                  [(ngModel)]="tradingPartnerDetails.contactDocument.phone_addresses[i].type">
+                <option value="">Select</option>
+                  <option [value]="phone" *ngFor="let phone of allPhoneTypes">
+                    {{ phone }}
+                  </option>
+                </select>
+                <span class="error" *ngIf="(contactForm.submitted || phType.touched) && phType.hasError('required')">Select Phone Type</span>
+              </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    tradingPartnerDetails.contactDocument.phone_addresses[i].type
+                  }}
+                </p>
+              </div>
+
+              <div class="col-md-4">
+                <label for="acode"
+                  >Country Code<span style="color: #cc3f3f">*</span></label>
+                <div *ngIf="isEditing">
+
+                <select id="country_code" class="input-para w-100" name="country_code{{i}}"
+                [(ngModel)]="tradingPartnerDetails.contactDocument.phone_addresses[i].country_code"
+                #countryCode="ngModel"
+                required>
+                <option value="">Select</option>
+                <option value="{{ availableGeoLocations.usa.phoneCountryCode}}">
+                  {{ availableGeoLocations.usa.phoneCountryCode}}</option>
+                <option value="{{ availableGeoLocations.canada.phoneCountryCode}}">
+                    {{ availableGeoLocations.canada.phoneCountryCode}}</option>
+                <option
+                    value="{{ availableGeoLocations.mexico.phoneCountryCode}}">
+                    {{ availableGeoLocations.mexico.phoneCountryCode}}</option>
+                <option
+                    value="{{ availableGeoLocations.china.phoneCountryCode}}">
+                    {{ availableGeoLocations.china.phoneCountryCode}}</option>
+                <option
+                    value="{{ availableGeoLocations.australia.phoneCountryCode}}">
+                    {{ availableGeoLocations.australia.phoneCountryCode}}</option>
+                <option
+                    value="{{ availableGeoLocations.guatemala.phoneCountryCode}}">
+                    {{ availableGeoLocations.guatemala.phoneCountryCode}}</option>
+                <option
+                    value="{{ availableGeoLocations.netherlands.phoneCountryCode}}">
+                    {{ availableGeoLocations.netherlands.phoneCountryCode}}</option>
+            </select>
+            <span class="error" *ngIf="(contactForm.submitted || countryCode.touched) && countryCode.hasError('required')">Enter Country Code</span>
+          </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    tradingPartnerDetails.contactDocument.phone_addresses[i].country_code
+                  }}
+                </p>
+              </div>
+
+              <div class="col-md-4">
+                <label for="acode"
+                  >Area Code<span style="color: #cc3f3f">*</span></label
+                >
+                <div *ngIf="isEditing">
+                  <input
+                  maxlength="10"
+                  class="input-para"
+                  id="acode"
+                  required
+                  ngModel
+                  name="areaCode{{i}}"
+                  onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                  #aCodeType="ngModel"
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .area_code
+                  "
+                />
+              <span class="error" *ngIf="(contactForm.submitted || aCodeType.touched) && aCodeType.hasError('required')">Enter Area Code</span>
+                </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .area_code
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="phone"
+                  >Phone Number<span style="color: #cc3f3f">*</span></label
+                >
+                <div *ngIf="isEditing">
+                  <input maxlength="15"
+                  minlength="8"
+                  class="input-para"
+                  id="phone"
+                  required
+                  ngModel
+                  name="phone{{i}}"
+                  #phNum="ngModel"
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .phone_number
+                  "
+                  onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                />
+              <span class="error" *ngIf="(contactForm.submitted || phNum.touched) && phNum.hasError('required')">Enter Phone Number</span>
+              <span class="error" *ngIf="(contactForm.submitted || phNum.touched) && phNum.hasError('minlength')">Enter Valid Phone Number</span>
+            </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .phone_number
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="ext">Extension</label>
+                <input
+                maxlength="10"
+                  class="input-para"
+                  *ngIf="isEditing"
+                  id="ext"
+                  name="phoneExtension{{i}}"
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .phone_extension
+                  "
+                  [ngModelOptions]="{ standalone: true }"
+                />
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    tradingPartnerDetails.contactDocument.phone_addresses[i]
+                      .phone_extension
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="country">
+                  <input
+                    class="minority"
+                    type="checkbox"
+                    name="phisPrimary{{i}}"
+                    id="phisPrimary{{i}}"
+                    [(ngModel)]="
+                      tradingPartnerDetails.contactDocument?.phone_addresses[i]
+                        .is_primary
+                    "
+                    [attr.disabled]="!isEditing ? 'disabled' : null"
+                    (click)="changePrimary(tradingPartnerDetails?.contactDocument?.phone_addresses,'phone',i,$event)"
+                  />Is Primary</label
+                >
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.phone_addresses.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removePhone(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addNewPhoneWithoutPrimary()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Phone Number</span>
+            </p>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+      <ng-template #viewPhoneAddress>
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let phone_num of tradingPartnerDetails.contactDocument?.phone_addresses | contactsPrimary:'is_primary':true; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type">Type</label>
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num.type
+                  }}
+                </p>
+              </div>
+
+              <div class="col-md-4">
+                <label for="acode">Country Code<span style="color: #cc3f3f">*</span></label>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{phone_num.country_code}}
+                </p>
+              </div>
+
+              <div class="col-md-4">
+                <label for="acode"
+                  >Area Code<span style="color: #cc3f3f">*</span></label
+                >
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .area_code
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="phone"
+                  >Phone Number<span style="color: #cc3f3f">*</span></label
+                >
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .phone_number
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="ext">Extension</label>
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .phone_extension
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="country">
+                  <input
+                  [attr.checked]="true"
+                  (change)="true"
+                    class="minority"
+                    type="checkbox"
+                    name="phisPrimary{{i}}"
+                    id="phisPrimary{{i}}"
+                    [(ngModel)]="phone_num.is_primary"
+                     [attr.disabled]="!isEditing ? 'disabled' : null"
+                    [ngModelOptions]="{standalone: true}"
+
+
+                   />Is Primary</label>
+              </div>
+              <div class="col-md-4">
+                        <div class="margin-left-35" *ngIf="tradingPartnerDetails.contactDocument?.phone_addresses?.length > 1">
+            <a class="accordion-button" (click)=hideDivPh(i) [ngClass]="{ 'collapsed': true }"
+              type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_morePh'"
+              aria-expanded="true" [attr.aria-controls]="'collapse_morePh'">
+              <p class="margin-top-13">
+                <a class="more-info">
+                  {{tradingPartnerDetails.contactDocument?.phone_addresses?.length-1}} More
+                  <span>
+                    <i-bs id="icon-down_ph{{i}}" name="chevron-down"></i-bs>
+                    <i-bs id="icon-up_ph{{i}}" style="display: none;" name="chevron-up"></i-bs>
+                  </span>
+                </a>
+              </p>
+            </a>
+          </div>
+              </div>
+            </div>
+          </div>
+
+
+
+        </div>
+
+        <div class="row"   [id]="'collapse_morePh'" class="collapse" style="border-bottom: 1px solid #dededf;" *ngFor="let phone_num of tradingPartnerDetails.contactDocument?.phone_addresses | contactsPrimary:'is_primary':false; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type">Type</label>
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num.type
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="acode">Country Code<span style="color: #cc3f3f">*</span></label>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{phone_num.country_code}}
+                </p>
+              </div>
+
+              <div class="col-md-4">
+                <label for="acode"
+                  >Area Code<span style="color: #cc3f3f">*</span></label
+                >
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .area_code
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="phone"
+                  >Phone Number<span style="color: #cc3f3f">*</span></label
+                >
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .phone_number
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label for="ext">Extension</label>
+
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    phone_num
+                      .phone_extension
+                  }}
+                </p>
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="country">
+                  <input
+                    class="minority"
+                    type="checkbox"
+                    name="phisPrimary{{i}}"
+                    id="phisPrimary{{i}}"
+                    [(ngModel)]="
+                    phone_num
+                        .is_primary
+                    "
+                    [attr.disabled]="!isEditing ? 'disabled' : null"
+                   />Is Primary</label
+                >
+              </div>
+            </div>
+          </div>
+          </div>
+          </ng-template>
+
+    </div>
+
+    <div class="box">
+      <p class="edit-header">Emails</p>
+      <div class="container">
+        <ng-container *ngIf="isEditing else viewEmailAddress">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let email of tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses;let i = index">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type"
+                  >Type<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.type }}</p>
+                <div *ngIf="isEditing">
+                  <select
+                  class="form-control"
+                  name="emailType{{i}}"
+                  ngModel
+                  required
+                  #emailType="ngModel"
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.electronic_addresses
+                      .electronic_email_addresses[i].type
+                  "
+                >
+                <option selected value="">Select</option>
+                  <option *ngFor="let type of allEmailTypes" [value]="type">
+                    {{ type }}
+                  </option>
+                </select>
+                <span class="error" *ngIf="(contactForm.submitted || emailType.touched) && emailType.hasError('required')">Select Type</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="email"
+                  >{{ email.type == ''? 'Email': email.type
+                  }}<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.email }}</p>
+                <div *ngIf="isEditing">
+                  <input
+                  ngModel
+                  required
+                  name="email{{i}}"
+                  #email="ngModel"
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.electronic_addresses
+                      .electronic_email_addresses[i].email
+                  "
+                  type="text"
+                  class="form-control"
+                  appEmailorWebSiteValidate [appIndex]="i"
+                />
+
+                <span class="error" *ngIf="(contactForm.submitted||email.touched) && email.hasError('required')">Enter {{tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses[i].type}}</span>
+                <span class="error" *ngIf="(contactForm.submitted||email.touched) && (!email.hasError('required') && email.hasError('invalidEmailAddress'))">Enter Valid Email</span>
+                <span class="error" *ngIf="(contactForm.submitted||email.touched) && (!email.hasError('required') && email.hasError('invalidWebsiteAddress'))">Enter Valid Website Url</span>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="emailIsPrimary{{i}}">
+                  <input
+                    class="is_primary"
+                    type="checkbox"
+                    name="emailIsPrimary{{i}}"
+                    id="emailIsPrimary{{i}}"
+                    ngModel
+                    [(ngModel)]="
+                      tradingPartnerDetails.contactDocument
+                        .electronic_addresses.electronic_email_addresses[i]
+                        .is_primary
+                    "
+                    [attr.disabled]="!isEditing ? 'disabled' : null"
+                     (click)="changePrimary(tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses,'email',i,$event)"
+                  />
+                  Is Primary</label
+                >
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.electronic_addresses.electronic_email_addresses.length!=1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removeEmail(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addNewEmailWithoutPrimary()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add New</span>
+            </p>
+          </div>
+        </div>
+        </ng-container>
+      </div>
+      <ng-template #viewEmailAddress>
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let email of tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses | contactsPrimary:'is_primary':true; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type"
+                  >Type<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.type }}</p>
+
+              </div>
+              <div class="col-md-4">
+                <label for="email"
+                  >{{ email.type == ''? 'Email': email.type
+                  }}<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.email }}</p>
+
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="emailIsPrimary{{i}}">
+                  <input
+                    class="is_primary"
+                    type="checkbox"
+                    name="emailIsPrimary{{i}}"
+                    id="emailIsPrimary{{i}}"
+                    ngModel
+                    [(ngModel)]="
+                      email
+                        .is_primary
+                    "
+                    [attr.disabled]="!isEditing ? 'disabled' : null"
+                    [ngModelOptions]="{standalone: true}"
+
+                   />
+                  Is Primary</label
+                >
+              </div>
+              <div class="col-md-4">
+                <div class="margin-left-35" *ngIf="tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses?.length > 1">
+    <a class="accordion-button" (click)=hideDivEmail(i) [ngClass]="{ 'collapsed': true }"
+      type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_moreEmail'"
+      aria-expanded="true" [attr.aria-controls]="'collapse_moreEmail'">
+      <p class="margin-top-13">
+        <a class="more-info">
+          {{tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses.length -1}} More
+          <span>
+            <i-bs id="icon-down_email{{i}}" name="chevron-down"></i-bs>
+            <i-bs id="icon-up_email{{i}}" style="display: none;" name="chevron-up"></i-bs>
+          </span>
+        </a>
+      </p>
+    </a>
+  </div>
+      </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="row" [id]="'collapse_moreEmail'" class="collapse" style="border-bottom: 1px solid #dededf;"  *ngFor="let email of tradingPartnerDetails?.contactDocument?.electronic_addresses?.electronic_email_addresses | contactsPrimary:'is_primary':false; let i = index;">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-md-4">
+                <label for="type"
+                  >Type<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.type }}</p>
+
+              </div>
+              <div class="col-md-4">
+                <label for="email"
+                  >{{ email.type == ''? 'Email': email.type
+                  }}<span style="color: #cc3f3f">*</span></label
+                >
+                <p *ngIf="!isEditing" class="input-para">{{ email.email }}</p>
+
+              </div>
+              <div class="col-md-4">
+                <label style="margin-top: 20px" for="emailIsPrimary{{i}}">
+                  <input
+                    class="is_primary"
+                    type="checkbox"
+                    name="emailIsPrimary{{i}}"
+                    id="emailIsPrimary{{i}}"
+                    ngModel
+                    [(ngModel)]="
+                      email
+                        .is_primary
+                    "
+                    [attr.disabled]="!isEditing ? 'disabled' : null"
+                   />
+                  Is Primary</label
+                >
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+          </ng-template>
+    </div>
+
+    <div class="box">
+      <p class="edit-header">Connect To Trading Partner</p>
+      <div class="container">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let tpmap of tradingPartnerDetails.contactDocument.connectToEntity.trading_partner; let i = index">
+          <div class="col-md-10">
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="tradinpartner{{i}}"
+                  >Trading Partner</label
+                >
+                <div *ngIf="isEditing">
+                  <div class="form-select">
+                    <ng-autocomplete
+                      [data]="tradingpartners"
+                      [searchKeyword]="autoCompleteTpName"
+                      placeholder="Select"
+                      [minQueryLength]=4
+                      (selected)='selectTradingPartnerEvent($event)'
+                      (customFilter)="selectExistingTradingPartnerEvent($event,tpmap.id)"
+                      (inputChanged)='onChangeSearchTradingPartner($event,tpmap.id)'
+                      (inputFocused)="onChangeSearchTradingPartner($event,tpmap.id)"
+                      [itemTemplate]="tpTemplate"
+                      [notFoundTemplate]="notFoundTpTemplate"
+                      (opened)="selectExistingTradingPartnerEventName($event,tpmap.id)"
+                      [initialValue]="(tpmap.id ===''?'':selectExistingTradingPartnerEventId(tpmap.id))"
+                      ngModel
+                      
+                      name="tradinpartner{{i}}"
+                      #tpName="ngModel"
+                      [(ngModel)]="
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .trading_partner[i].id"
+                     >
+                  </ng-autocomplete>
+
+                    <ng-template #tpTemplate let-tpinfo>
+                    <a [innerHTML]="tpinfo.name"></a>
+                    </ng-template>
+
+                    <ng-template #notFoundTpTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                    </ng-template>
+                    </div>
+                 
+                </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    getTradingPartnerName(
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .trading_partner[i].id
+                    )
+                  }}
+                </p>
+              </div>
+              <div class="col-sm-4">
+                <label for="roletype" class="mb-2">Role Type</label>
+                <div *ngIf="isEditing">
+                  <ngx-bootstrap-multiselect
+                  name="tpRoleType{{i}}"
+                  #tpRoleType="ngModel"
+                  
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .trading_partner[i].roles
+                  "
+                  [settings]="selectSettings"
+                  [options]="roleMultiSelect"
+                  (dropdownClosed)="multiSelectOnChange($event)"
+                >
+                </ngx-bootstrap-multiselect>
+
+                </div>
+                <ul *ngIf="!isEditing" class="list-inline">
+                  <li
+                    *ngFor="
+                      let role of tradingPartnerDetails.contactDocument
+                        .connectToEntity.trading_partner[i].roles
+                    "
+                    class="list-inline-item"
+                  >
+                    {{ role }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.connectToEntity?.trading_partner.length >1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removeTpEnity(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addTpEnity()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Role</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box">
+      <p class="edit-header">Connect To Restaurant</p>
+      <div class="container">
+        <div class="row" style="border-bottom: 1px solid #dededf;" *ngFor="let tpmap of tradingPartnerDetails.contactDocument.connectToEntity.restaurant;let i = index">
+          <div class="col-sm-10">
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="restaurant{{i}}"
+                  >Restaurant</label>
+                <div *ngIf="isEditing">
+                  <div class="form-select">
+                    <ng-autocomplete
+                      [data]="restaurants"
+                      [searchKeyword]="autoCompleteRestName"
+                      placeholder="Select"
+                      [minQueryLength]=4
+                      (selected)='selectRestEvent($event)'
+                      (customFilter)="selectExistingRestEvent($event,tpmap.id)"
+                      (inputChanged)='onChangeSearchRest($event,tpmap.id)'
+                      (inputFocused)="onChangeSearchRest($event,tpmap.id)"
+                      [itemTemplate]="tpTemplate"
+                      [notFoundTemplate]="notFoundTpTemplate"
+                      (opened)="selectExistingRestEventName($event,tpmap.id)"
+                      [initialValue]="(tpmap.id ===''?'':selectExistingRestEventId(tpmap.id))"
+                      ngModel
+                      
+                      #resName="ngModel"
+                      name="restaurant{{i}}"
+                      [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .restaurant[i].id
+                  "
+                     >
+                  </ng-autocomplete>
+
+                    <ng-template #tpTemplate let-tpinfo>
+                    <a [innerHTML]="tpinfo.name"></a>
+                    </ng-template>
+
+                    <ng-template #notFoundTpTemplate let-notFound>
+                    <div [innerHTML]="notFound"></div>
+                    </ng-template>
+                    </div>
+
+                </div>
+                <p *ngIf="!isEditing" class="input-para">
+                  {{
+                    getRestaurantName(
+                      tradingPartnerDetails.contactDocument.connectToEntity
+                        .restaurant[i].id
+                    )
+                  }}
+                </p>
+              </div>
+              <div class="col-sm-4">
+                <label for="roletype" class="mb-2">Role Type</label>
+                <div *ngIf="isEditing">
+                  <ngx-bootstrap-multiselect
+                  name="resRoleType{{i}}"
+                  #resRoleType="ngModel"
+                  
+                  [(ngModel)]="
+                    tradingPartnerDetails.contactDocument.connectToEntity
+                      .restaurant[i].roles
+                  "
+                  [settings]="selectSettings"
+                  [options]="roleMultiSelect"
+                  (dropdownClosed)="multiSelectOnChange($event)"
+                >
+                </ngx-bootstrap-multiselect>
+                </div>
+                <ul *ngIf="!isEditing" class="list-inline">
+                  <li
+                    *ngFor="
+                      let role of tradingPartnerDetails.contactDocument
+                        .connectToEntity.restaurant[i].roles
+                    "
+                    class="list-inline-item"
+                  >
+                    {{ role }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="isEditing && tradingPartnerDetails?.contactDocument?.connectToEntity?.restaurant.length >1" class="d-flex col-md-2 justify-content-center align-items-center" style="border-left: 1px solid #E5E5E7">
+            <p  (click)="removeRestaurantEnity(i)" class="delete-button margin-left-15">
+              <i-bs name="trash"></i-bs>
+          </p>
+          </div>
+        </div>
+        <div *ngIf="isEditing" class="row add-new">
+          <div class="col-md-9"></div>
+          <div class="col-md-3">
+            <p (click)="addRestaurantEnity()" style="position: relative; text-align:right">
+              <i-bs name="plus-circle"></i-bs>
+              <span style="text-decoration: underline">Add Restaurant</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="action-buttons" *ngIf="isEditing">
+    <div class="d-flex justify-content-between">
+      <div class="col-auto"></div>
+      <div class="col-auto" style="text-align: right">
+        <button
+          type="button"
+          class="btn-height-width"
+          (click)="goBackToView()"
+          style="background: #ffffff 0% 0% no-repeat padding-box;"
+        >
+          Cancel
+        </button>
+        <button type="submit" class="btn-height-width update-contact-btn">
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+
+
+<ng-template #deletecontact let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title"></h4>
+    <button
+      type="button"
+      class="delete-cross"
+      (click)="modal.dismiss('Cross click')"
+    >
+      <i-bs name="x-circle"></i-bs>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="d-flex justify-content-center">
+      <i-bs
+        name="exclamation-triangle"
+        class="exclamation"
+        width="75"
+        height="75"
+      >
+      </i-bs>
+    </div>
+    <div class="d-flex justify-content-center sure-div">
+      <p>Are you sure you want to delete this contact?</p>
+    </div>
+    <div class="d-flex justify-content-center">
+      <h4 class="name">
+        {{ tradingPartnerDetails.firstName }}  {{ tradingPartnerDetails.lastName }}
+      </h4>
+    </div>
+    <div class="justify-content-center warning-div">
+      <p>This Operation cannot be undone</p>
+      <div class="warning-box">
+        <div>
+          <p>
+            <i-bs name="arrow-right-short"></i-bs>
+            Contact will be permanently deleted
+          </p>
+          <p>
+            <i-bs name="arrow-right-short"></i-bs>
+            All data associated will be deleted
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer two-btn-modal-footer">
+    <button
+      class=" footer-button"
+      (click)="modal.dismiss('Cross click')"
+      style="color: #484848; background: #ffffff"
+    >
+      Cancel
+    </button>
+    <button
+      type="button"
+      class=" footer-button"
+      (click)="deletecontactbyId()"
+      style="background: #2f4e6d; color: #ffffff"
+    >
+      Yes, Delete
+    </button>
+  </div>
+</ng-template>

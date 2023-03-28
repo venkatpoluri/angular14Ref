@@ -1,0 +1,727 @@
+<div>
+  <div class="heading">Add New Contact</div>
+  <form [formGroup]="createContactFormGroup" (ngSubmit)="createContact()">
+    <div class="row" style="margin-bottom: 70px">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">General Information</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="firstname" [ngClass]="{
+                    'label-error':
+                      !createContactFormGroup.get('firstName').valid &&
+                      createContactFormGroup.get('firstName').touched
+                  }">First Name<span style="color: #cc3f3f">*</span></label>
+                <input name="firstname" type="text" formControlName="firstName" class="form-select" maxlength="30" />
+                <span class="error" *ngIf="
+                    !createContactFormGroup.get('firstName').valid &&
+                    createContactFormGroup.get('firstName').touched
+                  ">
+                  Enter a First Name
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <label for="middlename">Middle Name</label>
+                <input name="middlename" type="text" formControlName="middleName" class="form-control" maxlength="25" />
+              </div>
+              <div class="col-sm-4">
+                <label for="lastname" [ngClass]="{
+                    'label-error':
+                      !createContactFormGroup.get('lastName').valid &&
+                      createContactFormGroup.get('lastName').touched
+                  }">Last Name<span style="color: #cc3f3f">*</span></label>
+                <input name="lastname" type="text" formControlName="lastName" class="form-control" maxlength="30" />
+                <span class="error" *ngIf="
+                    !createContactFormGroup.get('lastName').valid &&
+                    createContactFormGroup.get('lastName').touched
+                  ">
+                  Enter a Last Name
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <label for="suffix" [ngClass]="{
+                    'label-error':
+                      !createContactFormGroup.get('suffix').valid &&
+                      createContactFormGroup.get('suffix').touched
+                  }">Suffix<span style="color: #cc3f3f">*</span></label>
+                <select name="suffix" formControlName="suffix" class="form-control">
+                  <option selected value=''>Select</option>
+                  <option>Mr.</option>
+                  <option>Mrs.</option>
+                </select>
+                <span class="error" *ngIf="
+                    !createContactFormGroup.get('suffix').valid &&
+                    createContactFormGroup.get('suffix').touched
+                  ">
+                  Select Suffix
+                </span>
+              </div>
+              <div class="col-sm-4">
+                <label for="title">Title</label>
+                <select name="title" formControlName="title" class="form-control">
+                  <option selected value=''>Select</option>
+                  <option *ngFor="let title of titles">{{title}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Phone Number</div>
+          <div class="card-body" formArrayName="phoneNumber">
+            <div class="row content" *ngFor="let ph of phoneNumber.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <label for="type" [ngClass]="{
+                  'label-error':
+                    !ph.get('type').valid && ph.get('type').touched
+                }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control">
+                      <option selected value="">Select</option>
+                      <option *ngFor="let phAdType of phoneAddressType; let k = index">
+                        {{ phAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!ph.get('type').valid && ph.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="countryCode" [ngClass]="{
+                    'label-error':
+                      !ph.get('countryCode').valid &&
+                      ph.get('countryCode').touched
+                  }">Country Code<span style="color: #cc3f3f">*</span></label>
+                    <select name="countryCode" formControlName="countryCode" class="form-control">
+                      <option selected value=''>Select</option>
+                    <option value="{{ availableGeoLocations.usa.phoneCountryCode}}">
+                        {{ availableGeoLocations.usa.phoneCountryCode}}</option>
+                    <option value="{{ availableGeoLocations.canada.phoneCountryCode}}">
+                        {{ availableGeoLocations.canada.phoneCountryCode}}</option>
+                    <option
+                        value="{{ availableGeoLocations.mexico.phoneCountryCode}}">
+                        {{ availableGeoLocations.mexico.phoneCountryCode}}</option>
+                    <option
+                        value="{{ availableGeoLocations.china.phoneCountryCode}}">
+                        {{ availableGeoLocations.china.phoneCountryCode}}</option>
+                    <option
+                        value="{{ availableGeoLocations.australia.phoneCountryCode}}">
+                        {{ availableGeoLocations.australia.phoneCountryCode}}</option>
+                    <option
+                        value="{{ availableGeoLocations.guatemala.phoneCountryCode}}">
+                        {{ availableGeoLocations.guatemala.phoneCountryCode}}</option>
+                    <option
+                        value="{{ availableGeoLocations.netherlands.phoneCountryCode}}">
+                        {{ availableGeoLocations.netherlands.phoneCountryCode}}</option>
+                    </select>
+                    <span class="error" *ngIf="
+                    !ph.get('countryCode').valid &&
+                    ph.get('countryCode').touched
+                  ">
+                      Select Country Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="areacode" [ngClass]="{
+                    'label-error':
+                      !ph.get('areaCode').valid && ph.get('areaCode').touched
+                  }">Area Code<span style="color: #cc3f3f">*</span></label>
+                    <input type="text" name="areacodee" formControlName="areaCode" class="form-control"
+                      maxlength="10" />
+                    <span class="error" *ngIf="
+                    !ph.get('areaCode').valid && ph.get('areaCode').touched
+                  ">
+                      Enter Area Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="phonenumber" [ngClass]="{
+                    'label-error':
+                      !ph.get('phoneNumber').valid &&
+                      ph.get('phoneNumber').touched
+                  }">Phone Number<span style="color: #cc3f3f">*</span></label>
+                    <input type="phonenumber" name="phonenumber" formControlName="phoneNumber" class="form-control"
+                      maxlength="15" onkeypress='return event.charCode >= 48 && event.charCode <= 57' />
+                    <span class="error" *ngIf="
+                    !ph.get('phoneNumber').valid &&
+                    ph.get('phoneNumber').touched
+                  ">
+                      Enter Phone Number
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="extention">Extension</label>
+                    <input name="extention" type="text" formControlName="extentsion" class="form-control"
+                      maxlength="10" />
+
+                  </div>
+                  <div class="col-sm-4">
+                    <br />
+                    <br />
+                    <label for="phisPrimary">
+                      <input type="checkbox" class="minority" formControlName="isPrimary"
+                        (click)="onIsPrimaryPhoneChecked(ph,$event,i,'phoneNumber')" />
+                      Is Primary
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="phoneNumber.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deletePhoneNumber(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+            <div class="row add-new" *ngIf="phoneNumber.controls.length <= 5">
+              <div class="col-sm-7"></div>
+              <div class="col-sm-5">
+                <p (click)="addPhoneNumberWithoutPrimary()">
+                  <i-bs name="plus-circle"></i-bs>
+                  <span>Add Phone Number</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Postal Address</div>
+          <div class="card-body" formArrayName="postalAddress">
+            <div class="row content" *ngFor="let pa of postalAddress.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+
+                  <div class="col-sm-4">
+                    <label for="type" [ngClass]="{
+                    'label-error':
+                      !pa.get('type').valid && pa.get('type').touched
+                  }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control">
+                      <option selected value=''>Select</option>
+                      <option *ngFor="
+                      let postalAdType of postalAddressType;
+                      let j = index
+                    ">
+                        {{ postalAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!pa.get('type').valid && pa.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="address1" [ngClass]="{
+                    'label-error':
+                      !pa.get('address1').valid && pa.get('address1').touched
+                  }">Address 1<span style="color: #cc3f3f">*</span></label>
+                    <input name="address1" type="text" formControlName="address1" class="form-control" />
+                    <span class="error" *ngIf="
+                    !pa.get('address1').valid && pa.get('address1').touched
+                  ">
+                      Enter Address1
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="address2">Address 2</label>
+                    <input name="address2" type="text" formControlName="address2" class="form-control" />
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="city" [ngClass]="{
+                    'label-error':
+                      !pa.get('city').valid && pa.get('city').touched
+                  }">City<span style="color: #cc3f3f">*</span></label>
+                    <input name="city" formControlName="city" class="form-control" type="text" />
+                    <span class="error" *ngIf="!pa.get('city').valid && pa.get('city').touched">
+                      Enter City
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="state" [ngClass]="{
+                    'label-error':
+                      !pa.get('state').valid && pa.get('state').touched
+                  }">State<span style="color: #cc3f3f">*</span></label>
+                    <select name="state" formControlName="state" class="form-control">
+                      <option selected value=''>Select</option>
+                      <optgroup label="USA">
+                        <option *ngFor="let loc of availableGeoLocations.usa.states"
+                          value="{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="Canada">
+                        <option *ngFor="let loc of availableGeoLocations.canada.states"
+                          value="{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="Mexico">
+                        <option *ngFor="let loc of availableGeoLocations.mexico.states"
+                          value="{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="China">
+                        <option
+                            *ngFor="let loc of availableGeoLocations.china.states"
+                            value="{{loc.state}}">{{loc.state}}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Australia">
+                        <option
+                            *ngFor="let loc of availableGeoLocations.australia.states"
+                            value="{{loc.state}}">{{loc.state}}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Guatemala">
+                        <option
+                            *ngFor="let loc of availableGeoLocations.guatemala.states"
+                            value="{{loc.state}}">{{loc.state}}
+                        </option>
+                    </optgroup>
+                    <optgroup label="Netherlands">
+                        <option
+                            *ngFor="let loc of availableGeoLocations.netherlands.states"
+                            value="{{loc.state}}">{{loc.state}}
+                        </option>
+                    </optgroup>
+                    </select>
+                    <span class="error" *ngIf="!pa.get('state').valid && pa.get('state').touched">
+                      Select State
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="postalcode" [ngClass]="{
+                    'label-error':
+                      !pa.get('postalCode').valid &&
+                      pa.get('postalCode').touched
+                  }">Postal Code<span style="color: #cc3f3f">*</span></label>
+                    <input name="address2" type="text" formControlName="postalCode" class="form-control"
+                      maxlength="10" />
+                    <span class="error" *ngIf="
+                    !pa.get('postalCode').valid && pa.get('postalCode').touched
+                  ">
+                      Enter Postal Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="country" [ngClass]="{
+                    'label-error':
+                      !pa.get('country').valid && pa.get('country').touched
+                  }">Country<span style="color: #cc3f3f">*</span></label>
+                    <select name="country" formControlName="country" class="form-control">
+                      <option selected value=''>Select</option>
+                      <option value="usa">United States of America</option>
+                      <option value="canada">Canada</option>
+                      <option value="mexico">Mexico</option>
+                      <option value="china">China</option>
+                      <option value="australia">Australia</option>
+                      <option value="guatemala">Guatemala</option>   
+                      <option value="netherlands">Netherlands</option>                            
+                    </select>
+                    <span class="error" *ngIf="!pa.get('country').valid && pa.get('country').touched">
+                      Select Country
+                    </span>
+                  </div>
+                  <div class="col-sm-4" style="margin-top: 20px;">
+                    <label for="postalisPrimary">
+                      <input type="checkbox" class="minority" formControlName="isPrimary"
+                        (click)="onIsPrimaryPhoneChecked(pa,$event,i,'postalAddress')" />
+
+                      Is Primary
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="postalAddress.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deletePostalAddress(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+            <div class="row add-new" *ngIf="postalAddress.controls.length <= 5">
+              <div class="col-sm-7"></div>
+              <div class="col-sm-5">
+                <p (click)="addPostalAddressWithoutPrimary()">
+                  <i-bs name="plus-circle"></i-bs>
+                  <span>Add Postal Address</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Email</div>
+          <div class="card-body" formArrayName="email">
+            <div class="row content" *ngFor="let e of email.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+
+
+                  <div class="col-sm-4">
+                    <label for="type" [ngClass]="{
+                    'label-error': !e.get('type').valid && e.get('type').touched
+                  }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control">
+                      <option selected value=''>Select</option>
+                      <option *ngFor="
+                      let elctronicAdType of electronicAddressType;
+                      let j = index
+                    ">
+                        {{ elctronicAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!e.get('type').valid && e.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="email" [ngClass]="{
+                    'label-error':
+                      !e.get('email').valid && e.get('email').touched
+                  }">{{ email.controls[i].value.type== null || email.controls[i].value.type==''? 'Email' :
+                      email.controls[i].value.type }}<span style="color: #cc3f3f">*</span></label>
+                    <input type="text" name="email" formControlName="email" class="form-control" />
+                    <span class="error" *ngIf="!e.get('email').valid && e.get('email').touched">
+
+                      <span *ngIf="e.get('email').errors?.['required']">
+                        Enter {{ email.controls[i].value.type }}
+                      </span>
+                      <span
+                        *ngIf="!e.get('email').errors?.['required'] && email.controls[i].value.type ==='Email'  && e.get('email').errors?.['invalidEmailAddress']">
+                        Enter Valid Email
+                      </span>
+                      <span
+                        *ngIf="!e.get('email').errors?.['required'] && email.controls[i].value.type ==='Website'  && e.get('email').errors?.['invalidWebsiteAddress']">
+                        Enter Valid Website Url
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-4" style="margin-top: 20px;">
+                    <input type="checkbox" class="minority" formControlName="isPrimary"
+                      (click)="onIsPrimaryPhoneChecked(e,$event,i,'email')" />
+                    Is Primary
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="email.controls.length > 1" class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteEmail(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row add-new" *ngIf="email.controls.length <= 5">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+              <p (click)="addEmailWithoutPrimary()">
+                <i-bs name="plus-circle"></i-bs>
+                <span>Add New</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Notes</div>
+          <div class="card-body" formArrayName="notes">
+            <div class="row content" *ngFor="let note of notes.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-7" style="padding: 20px">
+                <label for="notes">Notes</label>
+                <textarea name="notes" type="text" formControlName="notes" class="form-control text-area"></textarea>
+              </div>
+              <div class="col-sm-3"></div>
+              <div *ngIf="notes.controls.length > 1" class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteNotes(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Connect to Trading Partner</div>
+          <div class="card-body" formArrayName="connectTp">
+            <div class="row content" *ngFor="let tp of connectTp.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+
+
+                  <div class="col-sm-4">
+
+                    <div class="form-select">
+                      <ng-autocomplete [data]="tradingPartners" [searchKeyword]="autoCompleteTpName"
+                        placeholder="Select" [minQueryLength]=4 (selected)='selectTradingPartnerEvent($event)'
+                        (inputChanged)='onChangeSearchTradingPartner($event)'
+                        (inputFocused)='onFocusedTradingPartner($event)' [itemTemplate]="tpTemplate"
+                        [notFoundTemplate]="notFoundTpTemplate" formControlName="tradingPartner">
+                      </ng-autocomplete>
+
+                      <ng-template #tpTemplate let-tpinfo>
+                        <a [innerHTML]="tpinfo.name"></a>
+                      </ng-template>
+
+                      <ng-template #notFoundTpTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                      </ng-template>
+                    </div>
+
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="roletype" [ngClass]="{
+                  'label-error': tp.get('tradingPartner').value.length>0 &&
+                    !tp.get('roleType').valid &&
+                    tp.get('roleType').touched
+                }">Role Type
+
+                    </label>
+                    <ngx-bootstrap-multiselect formControlName="roleType" [settings]="selectSettings"
+                      [options]="roleMultiSelect" (dropdownClosed)="multiSelectOnChange($event)">
+                    </ngx-bootstrap-multiselect>
+
+                    <span class="error" *ngIf=" tp.get('tradingPartner').value.length>0 &&
+                !tp.get('roleType').valid &&
+                tp.get('roleType').touched
+              ">
+                      Select Role Type
+                    </span>
+                  </div>
+
+                </div>
+              </div>
+              <div *ngIf="connectTp.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteconnectTp(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row add-new">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+              <p (click)="createConnectTp()">
+                <i-bs name="plus-circle"></i-bs>
+                <span>Add Role</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Connect to Facility</div>
+          <div class="card-body" formArrayName="connectFacility">
+            <div class="row content" *ngFor="let fac of connectFacility.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+                  <div class="col-sm-4">
+
+                    <div class="form-select">
+                      <ng-autocomplete [data]="facilities" [searchKeyword]="keyword" placeholder="Select"
+                        [minQueryLength]=4 (selected)='selectFacilityEvent($event)'
+                        (inputChanged)='onChangeSearchFacility($event)' (inputFocused)='onFocusedFacility($event)'
+                        [itemTemplate]="facilityTemplate" [notFoundTemplate]="notFoundfacilityTemplate"
+                        formControlName="facility">
+                      </ng-autocomplete>
+
+                      <ng-template #facilityTemplate let-facility>
+                        <a [innerHTML]="facility.name">{{facility.name}}</a>
+                      </ng-template>
+
+                      <ng-template #notFoundfacilityTemplate let-notFoundfacility>
+                        <div [innerHTML]="notFoundfacility"></div>
+                      </ng-template>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="roletype" [ngClass]="{
+                  'label-error':
+                    fac.get('facility').value>0 &&
+                    !fac.get('roleType').valid &&
+                    fac.get('roleType').touched
+                }">Role Type</label>
+                    <ngx-bootstrap-multiselect formControlName="roleType" [settings]="selectSettings"
+                      [options]="roleMultiSelect" (dropdownClosed)="multiSelectOnChange($event)">
+                    </ngx-bootstrap-multiselect>
+                    <span class="error" *ngIf="
+                    fac.get('facility').value>0 &&
+                  !fac.get('roleType').valid &&
+                  fac.get('roleType').touched
+                ">
+                      Select Role Type
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="connectFacility.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteConnectFacility(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row add-new">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+              <p (click)="createconnectFacility()">
+                <i-bs name="plus-circle"></i-bs>
+                <span>Add Facility</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Connect to Franchisee</div>
+          <div class="card-body" formArrayName="connectMember">
+            <div class="row content" *ngFor="let mem of connectMember.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+                  <div class="col-sm-4">
+
+                    <div class="form-select">
+                      <ng-autocomplete [data]="franchisees" [searchKeyword]="autoCompleteFrnchName" placeholder="Select"
+                        [minQueryLength]=4 (selected)='selectFranchiseeEvent($event)'
+                        (inputChanged)='onChangeSearchFranchisee($event)' (inputFocused)='onFocusedFranchisee($event)'
+                        [itemTemplate]="frachiseeTemplate" [notFoundTemplate]="notFoundfrTemplate"
+                        formControlName="member">
+                      </ng-autocomplete>
+
+                      <ng-template #frachiseeTemplate let-franchiseeinfo>
+                        <a [innerHTML]="franchiseeinfo.name"></a>
+                      </ng-template>
+
+                      <ng-template #notFoundfrTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                      </ng-template>
+                    </div>
+
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="roletype" [ngClass]="{
+                  'label-error':
+                  mem.get('member').value.length>0 &&
+                    !mem.get('roleType').valid &&
+                    mem.get('roleType').touched
+                }">Role Type</label>
+                    <ngx-bootstrap-multiselect formControlName="roleType" [settings]="selectSettings"
+                      [options]="roleMultiSelect" (dropdownClosed)="multiSelectOnChange($event)">
+                    </ngx-bootstrap-multiselect>
+                    <span class="error" *ngIf="
+                    mem.get('member').value.length>0 &&
+                  !mem.get('roleType').valid &&
+                  mem.get('roleType').touched
+                ">
+                      Select Role Type
+                    </span>
+
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="connectMember.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteConnectMember(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row add-new">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+              <p (click)="createConnectMember()">
+                <i-bs name="plus-circle"></i-bs>
+                <span>Add Franchisee</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Connect to Restaurant</div>
+          <div class="card-body" formArrayName="connectRestaurant">
+            <div class="row content" *ngFor="let res of connectRestaurant.controls; let i = index" [formGroupName]="i">
+              <div class="col-sm-10">
+                <div class="row">
+                  <div class="col-sm-4">
+                    <div class="form-select">
+                      <ng-autocomplete [data]="restaurants" [searchKeyword]="autoCompleteRestName" placeholder="Select"
+                        [minQueryLength]=4 (selected)='selectRestaurantEvent($event)'
+                        (inputChanged)='onChangeSearchRestaurant($event)' (inputFocused)='selectRestaurantEvent($event)'
+                        [itemTemplate]="restTemplate" [notFoundTemplate]="notFoundrestTemplate"
+                        formControlName="restaurant">
+                      </ng-autocomplete>
+
+                      <ng-template #restTemplate let-restinfo>
+                        <a [innerHTML]="restinfo.name"></a>
+                      </ng-template>
+
+                      <ng-template #notFoundrestTemplate let-notFound>
+                        <div [innerHTML]="notFound"></div>
+                      </ng-template>
+                    </div>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="roletype" [ngClass]="{
+                  'label-error':
+                  res.get('restaurant').value.length >0 &&
+                    !res.get('roleType').valid &&
+                    res.get('roleType').touched
+                }">Role Type </label>
+                    <ngx-bootstrap-multiselect class="select-btn" formControlName="roleType" [settings]="selectSettings"
+                      [options]="roleMultiSelect" (dropdownClosed)="multiSelectOnChange($event)">
+                    </ngx-bootstrap-multiselect>
+                    <span class="error" *ngIf="
+                    res.get('restaurant').value.length >0 &&
+                  !res.get('roleType').valid &&
+                  res.get('roleType').touched
+                ">
+                      Select Role Type
+                    </span>
+
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="connectRestaurant.controls.length > 1"
+                class="col-md-2 d-flex justify-content-center align-items-center"
+                style="border-left: 1px solid #E5E5E7;margin: 15px 0px;">
+                <p (click)="deleteConnectToRestaurant(i)" class="delete-button">
+                  <i-bs name="trash"></i-bs>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="row add-new">
+            <div class="col-sm-7"></div>
+            <div class="col-sm-5">
+              <p (click)="createConnectToRestaurant()">
+                <i-bs name="plus-circle"></i-bs>
+                <span>Add Restaurant</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <div class="d-flex justify-content-between">
+        <div class="col-auto">
+        </div>
+        <div class="col-auto" style="text-align: right">
+          <button type="button" class="footer-btn" (click)="backtoContact()">
+            Cancel
+          </button>
+          <button type="submit" class="footer-btn create-contact-btn">
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
