@@ -1,0 +1,72 @@
+.fixed-box {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 8px;
+    border-radius: 6px;
+    opacity: 1;
+    width: 100%;
+    padding: 5px;
+}
+.green {
+    color: green;
+}
+.red{
+    color: red;
+}
+.yellow{
+    color: yellow;
+}
+.blue {
+    color: #4c9dd9;
+}
+.check-inp {
+    padding: .5rem .5rem;
+}
+.table-container {
+    font-size: 12px !important;
+}
+.form-control-sm {
+    font-size: 12px !important;
+}
+
+.action-buttons {
+    height: 60px;
+    position: fixed;
+    z-index: 10;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    box-shadow: 0px -4px 6px #00000029;
+    opacity: 1;
+}
+
+.footer-btn {
+    width: 210px;
+    height: 30px;
+    font: normal normal 600 14px/18px Readex Pro;
+    letter-spacing: 0px;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    padding: inherit;
+    width: 218px;
+    height: 43px;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    opacity: 1;
+    margin: 10px;
+}
+.no-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100px;
+    width: 100%;
+}
+.save-btn {
+    background: #2F4E6D 0% 0% no-repeat padding-box !important;
+    color: #FFFFFF;
+}

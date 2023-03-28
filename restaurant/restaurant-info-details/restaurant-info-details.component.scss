@@ -1,0 +1,191 @@
+:host {
+    background-color: #fafafa;
+  }
+  .heading {
+    text-align: left;
+    font: normal normal bold 18px/23px Readex Pro;
+    letter-spacing: 0px;
+    color: #2f4e6d;
+    opacity: 1;
+    padding-bottom: 10px;
+  }
+
+  label {
+    text-align: left;
+    font: normal normal normal 14px/12px Readex Pro;
+    letter-spacing: 0.14px;
+    opacity: 1;
+    margin-right: 10px;
+  }
+
+  .label-error {
+    color: #cc3f3f;
+  }
+
+  input {
+    color: #6b778c;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+  }
+
+  .content {
+    border-bottom: 1px solid #dededf;
+  }
+
+  select {
+    height: 38px;
+    background: #f4f5f7 0% 0% no-repeat padding-box;
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+  }
+
+  .col-sm-4 {
+    padding: 10px;
+  }
+  .create-contact-btn {
+    background: #2f4e6d 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    opacity: 1;
+    color: white;
+  }
+  .card {
+    width: calc(100% - 20px);
+    background: #ffffff 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #0000000f;
+    border-radius: 6px;
+    opacity: 1;
+    margin: 10px;
+    height: fit-content;
+  }
+
+  .card-body {
+    padding: 0 10px !important;
+  }
+  .add-new {
+    text-align: right;
+    font: normal normal normal 12px/24px Readex Pro;
+    letter-spacing: 0px;
+    color: #2185d0;
+    opacity: 1;
+    cursor: pointer;
+    margin-bottom: 5px;
+    margin-right: 5px;
+
+    .col-sm-5 {
+      padding-top: 16px;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .text-area {
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+  }
+
+  button {
+    width: 218px;
+    height: 32px;
+    font: normal normal 600 14px/18px Readex Pro;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    opacity: 1;
+    margin: 10px;
+  }
+
+  .error {
+    text-align: left;
+    font: normal normal normal 12px/12px Readex Pro;
+    letter-spacing: 0.12px;
+    color: #cc3f3f;
+    opacity: 1;
+  }
+
+  .btn-secondary {
+    background: #f4f5f7 0% 0% no-repeat padding-box !important;
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+  }
+  ::ng-deep .role-select {
+    background: #f4f5f7 0% 0% no-repeat padding-box !important;
+    border: 1px solid #dededf !important;
+    border-radius: 4px !important;
+    color: #575757 !important;
+  }
+  ::ng-deep .role-select:hover {
+    color: #575757 !important;
+  }
+  .action-buttons {
+    height: 60px;
+    position: fixed;
+    z-index: 1000;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    background: #ffffff 0% 0% no-repeat padding-box;
+    box-shadow: 0px -4px 6px #00000029;
+    opacity: 1;
+  }
+  .isprimary {
+    margin-top: 5px;
+  }
+  .input-group {
+    width: 100%;
+}
+
+button.calendar,
+button.calendar:active {
+    width: 1.20rem;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAcCAYAAAAEN20fAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAEUSURBVEiJ7ZQxToVAEIY/YCHGxN6XGOIpnpaEsBSeQC9ArZbm9TZ6ADyBNzAhQGGl8Riv4BLAWAgmkpBYkH1b8FWT2WK/zJ8ZJ4qiI6XUI3ANnGKWBnht2/ZBDRK3hgVGNsCd7/ui+JkEIrKtqurLpEWaphd933+IyI3LEIdpCYCiKD6HcuOa/nwOa0ScJEnk0BJg0UTUWJRl6RxCYEzEmomsIlPU3IPW+grIAbquy+q6fluy/28RIBeRMwDXdXMgXLj/B2uimRXpui4D9sBeRLKl+1N+L+t6RwbWrZliTTTr1oxYtzVWiTQAcRxvTX+eJMnlUDaO1vpZRO5NS0x48sIwfPc87xg4B04MCzQi8hIEwe4bl1DnFMCN2zsAAAAASUVORK5CYII=') !important;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-position: center;
+ }
+
+.width-100 {
+  width: 100px;
+}
+
+.input-para {
+  font: var(--unnamed-font-style-normal) normal var(--unnamed-font-weight-medium) var(--unnamed-font-size-14)/var(--unnamed-line-spacing-12) var(--unnamed-font-family-readex-pro);
+  letter-spacing: var(--unnamed-character-spacing-0-14);
+  color: var(--unnamed-color-1d1d1d);
+  text-align: left;
+  font: normal normal medium 14px/12px Readex Pro;
+  letter-spacing: 0.14px;
+  color: #1D1D1D;
+  opacity: 1;
+
+}
+.more-info {
+  text-align: left;
+  font: normal normal normal 14px/24px Readex Pro;
+  letter-spacing: 0px;
+  color: #2185D0;
+  opacity: 1;
+}
+.bottom-margin{
+  margin-bottom: 63px;
+}
+label {
+  display: block;
+  text-align: left;
+  font: normal normal normal 12px/12px Readex Pro;
+  letter-spacing: 0.14px;
+  color: #6B778C;
+  opacity: 1;
+}
+.padding-left-7px{
+  padding-left: 7px;
+}
+.color-red {
+  color: #d05739;
+}

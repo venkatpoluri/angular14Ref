@@ -1,0 +1,334 @@
+<div *ngIf="nodes?.length<=0" style="min-height: 150px; color:#a7a7a7">
+
+  <div class="row fixed-box">
+    <div class=" d-flex justify-content-center text-center align-items-center">
+      <div>
+        <img src="../../../assets/new-graph.png" />
+        <br />
+        <strong>No Lane Exists</strong>
+        <p>Click <span class="green" (click)="openEnd(addfacilityoffcanvas,null)">Create New Lane</span> to begin</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div *ngFor="let node of nodes; let idx = index;" class="wrapper fixed-box">
+  <div class="d-flex justify-content-end trash"> <i-bs name="trash" (click)="deleteLaneSegment(idx)"></i-bs></div>
+  <ul class="tree">
+    <li *ngIf="node"
+      [ngClass]="{'single':getType(node?.source_facility_role_type)==='M'||getType(node?.source_facility_role_type)=='S' }">
+      <span class="label">
+        <span class="text">{{node?.source_facility_name}} - <span
+            class="green-label">{{node?.source_currency}}</span></span>
+        <div class="  tooltip-container "
+          [ngClass]="{'circle':node?.type!=='DC','circlesmall':getType(node?.source_facility_role_type)==='DC','purple':getType(node?.source_facility_role_type)==='DC', 'blue':getType(node?.source_facility_role_type)==='M','yellow':getType(node?.source_facility_role_type)==='RDC','red':getType(node?.source_facility_role_type)==='S' }">
+          {{getType(node.source_facility_role_type)}}
+          <div class="nodetooltip">
+            <ul class="edit-tabs">
+              <li>
+                <a (click)="openEnd(addfacilityoffcanvas,node, false, idx)">Add
+                  Facility</a>
+              </li>
+              <li>
+                <a (click)="openEnd(editfacilityoffcanvas, node, true, idx)">Edit
+                  Facility</a>
+              </li>
+              <li>
+                <a (click)="deleteNode(node, node.source_facility_role_type, idx)">Delete Facility</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </span>
+
+      <ul>
+        <ng-container
+          *ngTemplateOutlet="Recursion; context:{ list: node.children, branches:false, currentcount:0, nodeindex:idx}"></ng-container>
+      </ul>
+    </li>
+  </ul>
+</div>
+<div *ngIf="isSegmentChanged && !isCreateNewLaneSegment" class="action-buttons">
+  <div class="d-flex justify-content-end">
+    <div class="col-auto" style="text-align: right">
+      <button type="button" class="footer-btn" (click)="cancelSegmentChanges()">
+        Cancel
+      </button>
+      <button type="submit" class="footer-btn save-btn" (click)="updateSegment()">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+<div *ngIf="isCreateNewLaneSegment" class="action-buttons">
+  <div class="d-flex justify-content-end">
+    <div class="col-auto" style="text-align: right">
+      <button type="button" class="footer-btn" (click)="cancelSegmentChanges()">
+        Cancel
+      </button>
+      <button type="submit" class="footer-btn save-btn" (click)="saveNewLaneSegment()">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+<ng-template #Recursion let-list="list" let-isbranches="isbranches" let-nodeindex="nodeindex">
+  <ng-container *ngFor="let item of list">
+    <li
+      [ngClass]="{'single':getType(item?.source_facility_role_type)==='M'||getType(item?.source_facility_role_type)=='S' || (getType(item?.source_facility_role_type)=='RDC' && !isbranches)}">
+      <ng-container
+        *ngIf=" getType(item?.source_facility_role_type)==='M' || getType(item?.source_facility_role_type)==='S' || getType(item?.source_facility_role_type)==='RDC'; else isBranch">
+        <span class="label">
+          <span class="text">{{item?.source_facility_name}} - <span
+              class="green-label">{{item?.source_currency}}</span></span>
+          <div class="  tooltip-container "
+            [ngClass]="{'circle':getType(item?.type)!=='DC','circlesmall':getType(item?.source_facility_role_type)==='DC','purple':getType(item?.source_facility_role_type)==='DC', 'blue':getType(item?.source_facility_role_type)==='M','yellow':getType(item?.source_facility_role_type)==='RDC','red':getType(item?.source_facility_role_type)==='S' }">
+            {{getType(item.source_facility_role_type)}}
+            <div class="nodetooltip">
+              <ul class="edit-tabs">
+                <li>
+                  <a (click)="openEnd(addfacilityoffcanvas,item, false, nodeindex)">Add
+                    Facility</a>
+                </li>
+                <li>
+                  <a (click)="openEnd(editfacilityoffcanvas, item, true, nodeindex)">Edit
+                    Facility</a>
+                </li>
+                <li>
+                  <a (click)="deleteNode(item,item.source_facility_role_type, nodeindex)">Delete Facility</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </span>
+      </ng-container>
+      <ng-template #isBranch>
+        <div class="label d-flex justify-content-between align-items-center tooltip-container">
+
+          <div class="circlesmall purple ">{{getType(item.source_facility_role_type)}}</div>
+          <div class="small-text">{{item.source_facility_name}} - {{item.source_currency}}</div>
+
+          <div class="nodetooltip">
+            <ul class="edit-tabs dc">
+              <li>
+                <a (click)="openEnd(editfacilityoffcanvas, item, true, nodeindex)">Edit
+                  Facility</a>
+              </li>
+              <li>
+                <a (click)="deleteNode(item,item.source_facility_role_type, nodeindex)">Delete Facility</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </ng-template>
+
+      <ul *ngIf="item.children?.length >0">
+        <ng-container
+          *ngTemplateOutlet="Recursion; context:{ list: item.children,isbranches:item.children?.length>1, nodeindex:nodeindex }"></ng-container>
+      </ul>
+    </li>
+  </ng-container>
+</ng-template>
+
+
+<ng-template #addfacilityoffcanvas let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 *ngIf="laneSegmentHasManuAndShipping" class="offcanvas-title">Add Next Facility(s)</h4>
+    <h4 *ngIf="!laneSegmentHasManuAndShipping" class="offcanvas-title">Create Item Lane Segment</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div *ngIf="nodes?.length >0" class="add-facility-info">
+      <p>Select the Facility(s) you wish to link to <strong>{{parentFacilityToAddTo?.source_facility_name}}</strong>.
+        Select an
+        exchange
+        rate to link to the facility , and then click <strong>OK</strong></p>
+    </div>
+    <div *ngIf="!laneSegmentHasManuAndShipping">
+      <div class="row">
+        <div class="col">
+          <label>Begin Date <span class="red-label">*</span></label>
+          <input type="date" min="01/01/1900" max="12/31/9999" class="form-control" [(ngModel)]="newLaneSegmentBeginDate" />
+        </div>
+        <div class="col">
+          <label>End Date <span class="red-label">*</span></label>
+          <input type="date" min="01/01/1900" max="12/31/9999" class="form-control" [(ngModel)]="newLaneSegmentEndDate"/>
+        </div>
+        <div class="col">
+          <label>Type <span class="red-label">*</span></label>
+          <select class="form-select" [(ngModel)]="newLaneSegmentType">
+            <option value="FinishedGoods">FinishedGoods</option>
+            <option value="Finished Goods">Finished Goods</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <br />
+    <div *ngIf="!laneSegmentHasManuAndShipping">
+      <h4 class="offcanvas-title">Add Mfg Facility</h4>
+    </div>
+    <div class="row row-headers" *ngIf="!laneSegmentHasManuAndShipping">
+      <div class="col-md-1">
+        <strong>Mfg</strong>
+      </div>
+      <div class="col-md-1">
+        <strong>Ship</strong>
+      </div>
+      <div class="col-md-6">
+        <strong>Facility Name</strong>
+      </div>
+      <div class="col-md-4">
+        <strong>Currency Type</strong>
+      </div>
+    </div>
+    <div class="row row-headers" *ngIf="laneSegmentHasManuAndShipping">
+      <div class="col-md-1">
+        <strong>RDC</strong>
+      </div>
+      <div class="col-md-1">
+        <strong>DC</strong>
+      </div>
+      <div class="col-md-6">
+        <strong>Facility Name</strong>
+      </div>
+      <div class="col-md-4">
+        <strong>Exhange Rate Set</strong>
+      </div>
+    </div>
+    <ng-container *ngIf="!laneSegmentHasManuAndShipping">
+      <div *ngFor="let loc of facilities; let i =index;" class="row">
+        <div class="col-md-1">
+          <input [checked]="loc.manfCheck && loc.id===mfgNode?.id" [attr.disabled]="isManufacturedRole(i)?null:true"
+            type="checkbox" class="checkBox" (click)="selectMfgNode(i,$event,exchangeRateManuShip)" />
+        </div>
+        <div class="col-md-1">
+          <input [checked]="loc.id===shipNode?.id" type="checkbox" class="checkBox"
+            [attr.disabled]="isShippingRole(i)?null:true" (click)="selectShipNode(i,$event,exchangeRateManuShip)" />
+        </div>
+        <div class="col-md-6">
+          <label class="input-para"> {{loc.name}}</label>
+
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" #exchangeRateManuShip>
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+            <option value="MXN">MXN</option>
+          </select>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="laneSegmentHasManuAndShipping">
+      <div *ngFor="let loc of rdcDistributionFacilities; let i =index;" class="row">
+        <div class="col-md-1">
+          <input type="checkbox" class="checkBox" (click)="selectRdcNode(i, $event)" [disabled]="nodeAndRoleExistOnCanvas(loc, 'Redistribution Center')" />
+        </div>
+        <div class="col-md-1">
+          <input type="checkbox" class="checkBox" (click)="selectDCNodes(i, $event)" [disabled]="nodeAndRoleExistOnCanvas(loc, 'Distribution Center')"/>
+        </div>
+        <div class="col-md-6">
+          {{loc.name}}
+        </div>
+        <div class="col-md-4">
+          <select (change)="setRDCDCCurreny(loc, $event)">
+            <option value="">Select</option>
+            <option *ngFor="let rate of exchangeRatesToDisplay" [ngValue]="rate">{{rate.name}} - {{rate.sourceCurrencyName}} to {{rate.destinationCurrencyName}}</option>
+          </select>
+        </div>
+      </div>
+    </ng-container>
+    <div class="offcanvas-action-buttons">
+      <div class="d-flex justify-content-end">
+        <div class="col-auto" style="text-align: right">
+          <button type="button" class="footer-btn" (click)="cancel()">
+            Cancel
+          </button>
+          <button *ngIf="!laneSegmentHasManuAndShipping" (click)="addMfgShipNodes()" type="submit" class="footer-btn save-btn">
+            Next
+          </button>
+          <button *ngIf="laneSegmentHasManuAndShipping" type="submit" class="footer-btn save-btn"
+            (click)="addRdcDCNodes(parentFacilityToAddTo)">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #editfacilityoffcanvas let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title">Edit Facility</h4>
+
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div *ngIf="!isEditRDCDC">
+      <div class="row ">
+        <div class="col">
+          <label>Select Facility <span class="red-label">*</span></label>
+
+          <select #editedFacility>
+            <option *ngFor="let loc of facilities; let i =index;" value="{{loc.id}}:::{{loc.name}}">{{loc.name}}
+            </option>
+          </select>
+
+          <br />
+          <label>Exchange Rate Set <span class="red-label">*</span></label>
+          <select #exchangeRate>
+            <option value="USD">USD</option>
+            <option value="CAD">CAD</option>
+            <option value="MXN">MXN</option>
+          </select>
+        </div>
+      </div>
+      <div class="offcanvas-action-buttons">
+        <div class="d-flex justify-content-end">
+          <div class="col-auto" style="text-align: right">
+            <button type="button" class="footer-btn" (click)="cancel()">
+              Cancel
+            </button>
+            <button (click)="updateNodeFacility(editedFacility, exchangeRate,null,null)" type="submit"
+              class="footer-btn save-btn">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="isEditRDCDC">
+      <div class="row ">
+        <div class="col">
+          <label>Select Facility <span class="red-label">*</span></label>
+
+          <select #editedFacility>
+            <option *ngFor="let loc of rdcDistributionFacilities; let i =index;" value="{{loc.id}}:::{{loc.name}}">
+              {{loc.name}}
+            </option>
+          </select>
+          <br/>
+          <br />
+          <label>Exchange Rate Set <span class="red-label">*</span></label>
+
+          <!-- <select (change)="setRDCDCCurreny(loc, $event)"> -->
+          <select #exchangeRate>
+            <option value="">Select</option>
+            <option *ngFor="let rate of exchangeRatesToDisplay" value="{{rate.id}}">{{rate.name}} - {{rate.sourceCurrencyName}} to {{rate.destinationCurrencyName}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="offcanvas-action-buttons">
+        <div class="d-flex justify-content-end">
+          <div class="col-auto" style="text-align: right">
+            <button type="button" class="footer-btn" (click)="cancel()">
+              Cancel
+            </button>
+            <button (click)="updateNodeFacility(editedFacility, exchangeRate,null,null)" type="submit"
+              class="footer-btn save-btn">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

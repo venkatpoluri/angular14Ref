@@ -1,0 +1,64 @@
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/pricing-dashboard"> Pricing </a></li>
+        <li><i i-bs name="arrow-right-short"></i></li>
+        <li class="breadcrumb-item"> Item Pricing</li>
+    </ol>
+    <div class="toolbar row mb-3 justify-content-md-center">
+        <div class="col-3">
+            <h3 *ngIf="item?.name" class="item-name">{{item.name}}, {{item.num}} </h3>
+        </div>
+        <div class="col">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="w-15 mx-2">
+                    <label>Begin Date <span class="red-label">*</span></label>
+                    <input type="date" min="01/01/1900" max="12/31/9999" class="form-control"
+                        [(ngModel)]="newLaneSegmentBeginDateHeader" />
+                </div>
+                <div class="w-15 mx-2">
+                    <label>End Date <span class="red-label">*</span></label>
+                    <input type="date" min="01/01/1900" max="12/31/9999" class="form-control"
+                        [(ngModel)]="newLaneSegmentEndDateHeader" />
+                </div>
+                <div class="w-25 mx-2">
+                    <label>Pricing Type <span class="red-label">*</span></label>
+                    <select class="form-select" [(ngModel)]="newLaneSegmentPricingType">
+                        <option value="Lanes">Lanes</option>
+                        <option value="No Matrix">No Matrix</option>
+
+                    </select>
+                </div>
+                <div class="w-25 mx-2">
+                    <label>UOM <span class="red-label">*</span></label>
+                    <select class="form-select" [(ngModel)]="newLaneSegmentUOM">
+                        <option value="Case(s)">Case(s)</option>
+                        <option value="Kilogram(s)">Kilogram(s)</option>
+                        <option value="Kilo(s)">Kilo(s)</option>
+                        <option value="Pound(s)">Pound(s)</option>
+
+
+                    </select>
+                </div>
+                <div class="w-25 mx-2">
+                    <label>Type <span class="red-label">*</span></label>
+                    <select class="form-select" [(ngModel)]="newLaneSegmentType">
+                        <option value="current">Current</option>
+                        <option value="awarded">Awarded</option>
+
+                    </select>
+                </div>
+                <div class="createbtn-pad">
+                    <a class="btn create-new" role="button" (click)="openNewLane()">
+                        <span class="bi bi-plus-square-fill"></span>&nbsp;
+                        <span style="font-size: 13px;">Create New Lane</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</nav>
+
+<app-item-node-graph [openNewLane]="newLaneSubject.asObservable()" [isCreateNewLaneSegment]="true"
+    [newLaneSegmentBeginDate]="newLaneSegmentBeginDateHeader" [newLaneSegmentEndDate]="newLaneSegmentEndDateHeader"
+    [newLaneSegmentPricingType]="newLaneSegmentPricingType" [newLaneSegmentUOM]="newLaneSegmentUOM" [newLaneSegmentType]="newLaneSegmentType"></app-item-node-graph>

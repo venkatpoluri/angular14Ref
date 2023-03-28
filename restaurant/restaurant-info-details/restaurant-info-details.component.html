@@ -1,0 +1,1471 @@
+<nav *ngIf="isCreate">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a [routerLink]="'/all-franchisees'"> Franchisees </a></li>
+      <li><i i-bs name="arrow-right-short"></i></li>
+      <li class="breadcrumb-item"><a [routerLink]="'/all-restaurants'"> All Restaurants</a></li>
+      <li><i i-bs name="arrow-right-short"></i></li>
+      <li class="breadcrumb-item"> Add New Restaurant</li>
+    </ol>
+  </nav>
+  <div>
+    <div class="heading" *ngIf="isCreate">Add New Restaurant</div>
+    <form [formGroup]="createRestaurantFormGroup" (ngSubmit)="updateRestaurant()">
+      <div [ngClass]="{
+        'bottom-margin': !isView,
+        'row': true
+      }">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">Resturant Information</div>
+            <div class="card-body">
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="name">Restaurant Number<span style="color: #cc3f3f">*</span></label>
+                  <p class="input-para">{{restaurantDTO.num}}</p>
+
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="name">Restaurant Name<span style="color: #cc3f3f">*</span></label>
+                  <p class="input-para">{{restaurantDTO.name}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="operatorName" [ngClass]="{
+                          'label-error':
+                            !createRestaurantFormGroup.get('operatorName').valid &&
+                            createRestaurantFormGroup.get('operatorName').touched
+                        }">Restaurant Operator Name<span style="color: #cc3f3f">*</span></label>
+                  <input *ngIf="!isView" name="operatorName" type="text" formControlName="operatorName"
+                    class="form-control" value="{{restaurantDTO.restaurantDocument.operator_name}}" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operator_name}}</p>
+                  <span class="error" *ngIf="
+                          !createRestaurantFormGroup.get('operatorName').valid &&
+                          createRestaurantFormGroup.get('operatorName').touched
+                        ">
+                    Enter Operator Name
+                  </span>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="operatorNum" [ngClass]="{
+                        'label-error':
+                          !createRestaurantFormGroup.get('operatorNum').valid &&
+                          createRestaurantFormGroup.get('operatorNum').touched
+                      }">Restaurant Operator Number<span style="color: #cc3f3f">*</span></label>
+                  <input *ngIf="!isView" name="operatorNum" type="text" formControlName="operatorNum" onkeypress='return event.charCode >= 48 && event.charCode <= 57'
+                    class="form-control" />
+
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operator_number}}</p>
+                  <span class="error" *ngIf="
+                        !createRestaurantFormGroup.get('operatorNum').valid &&
+                        createRestaurantFormGroup.get('operatorNum').touched
+                      ">
+                    Enter Restaurant Operator Number
+                  </span>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="projectedOpenDate" [ngClass]="{
+                    'label-error':
+                      !createRestaurantFormGroup.get('projectedOpenDate').valid &&
+                      createRestaurantFormGroup.get('projectedOpenDate').touched
+                  }">Projected Open Date<span style="color: #cc3f3f">*</span></label>
+                  <div class="input-group" *ngIf="!isView">
+                    <input class="form-control" type="date" max="9999-12-31" placeholder="yyyy-mm-dd" name="projectedOpenDate"
+                      formControlName="projectedOpenDate"
+                      value="{{restaurantDTO.restaurantDocument.projected_open_date}}">
+                  </div>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.projected_open_date | date:dateFormat}}</p>
+                  <span class="error" *ngIf="
+                !createRestaurantFormGroup.get('projectedOpenDate').valid &&
+                createRestaurantFormGroup.get('projectedOpenDate').touched">
+                    Select Projected Open Date
+                  </span>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="franchisee" [ngClass]="{
+                  'label-error':
+                    !createRestaurantFormGroup.get('franchisee').valid &&
+                    createRestaurantFormGroup.get('franchisee').touched
+                }">Franchisee<span class="color-red">*</span></label>
+                  <select *ngIf="!isView" name="franchisee" formControlName="franchisee" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.is_franchisee?'Yes':'No'}}</p>
+                  <span class="error" *ngIf="
+                !createRestaurantFormGroup.get('franchisee').valid &&
+                createRestaurantFormGroup.get('franchisee').touched">
+                    Select Franchisee or Not
+                  </span>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="dmaName" [ngClass]="{
+                        'label-error':
+                          !createRestaurantFormGroup.get('dmaName').valid &&
+                          createRestaurantFormGroup.get('dmaName').touched
+                      }">Restaurant DMA Name<span style="color: #cc3f3f">*</span></label>
+                  <input *ngIf="!isView" name="dmaName" type="text" formControlName="dmaName" class="form-control" />
+                  <span class="error" *ngIf="
+                        !createRestaurantFormGroup.get('dmaName').valid &&
+                        createRestaurantFormGroup.get('dmaName').touched
+                      ">
+                    Enter Restaurant DMA Name
+                  </span>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.dma_name}}</p>
+                </div>
+
+                 <div class="col-sm-4">
+                  <label for="dmaNumber" [ngClass]="{
+                        'label-error':
+                          !createRestaurantFormGroup.get('dmaNumber').valid &&
+                          createRestaurantFormGroup.get('dmaNumber').touched
+                      }">Restaurant DMA Number<span style="color: #cc3f3f">*</span></label>
+                  <input *ngIf="!isView" name="dmaNumber" type="text" formControlName="dmaNumber" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' />
+                  <span class="error" *ngIf="
+                        !createRestaurantFormGroup.get('dmaNumber').valid &&
+                        createRestaurantFormGroup.get('dmaNumber').touched
+                      ">
+                    Enter Restaurant DMA Number
+                  </span>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.dma_number}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="regionalManager" [ngClass]="{
+                        'label-error':
+                          !createRestaurantFormGroup.get('regionalManager').valid &&
+                          createRestaurantFormGroup.get('regionalManager').touched
+                      }">Restaurant Regional Manager<span style="color: #cc3f3f">*</span></label>
+                  <input *ngIf="!isView" name="regionalManager" type="text" formControlName="regionalManager"
+                    class="form-control" />
+                  <span class="error" *ngIf="
+                        !createRestaurantFormGroup.get('regionalManager').valid &&
+                        createRestaurantFormGroup.get('regionalManager').touched
+                      ">
+                    Enter Restaurant Regional Manager
+                  </span>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.regional_manager}}</p>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">General information</div>
+            <div class="card-body" formGroupName="generalInfo">
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="reportingUnitName">Reporting Unit Name</label>
+                  <input *ngIf="!isView" name="reportingUnitName" type="text" formControlName="reportingUnitName"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.reporting_unit_name}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="reportingUnitNum">Reporting Unit #</label>
+                  <input *ngIf="!isView" name="reportingUnitNum" type="text" formControlName="reportingUnitNum"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.reporting_unit_number}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="landMarkDesc">Landmark Description</label>
+                  <input *ngIf="!isView" name="landMarkDesc" type="text" formControlName="landMarkDesc"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.landmark_description}}</p>
+
+                </div>
+
+              </div>
+
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="locationType">Location Type</label>
+                  <select *ngIf="!isView" name="type" formControlName="locationType" class="form-control"
+                    value="{{restaurantDTO.restaurantDocument.location_type}}">
+                    <option selected value="">Select</option>
+                    <option *ngFor="let loc of locationTypes; let j = index">
+                      {{ loc }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.location_type}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="locationGroup">Location Group</label>
+                  <input *ngIf="!isView" name="locationGroup" type="text" formControlName="locationGroup"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.location_group}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="siteNum">Site Number</label>
+                  <input *ngIf="!isView" name="siteNum" type="text" formControlName="siteNum" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.site_number}}</p>
+
+                </div>
+
+              </div>
+
+
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="siteNumTransDate">Site Number Transition Date</label>
+
+
+                  <div class="input-group">
+                    <input *ngIf="!isView" class="form-control" type="date" max="9999-12-31" placeholder="yyyy-mm-dd"
+                      name="siteNumTransDate" formControlName="siteNumTransDate"
+                      value="{{restaurantDTO.restaurantDocument.site_number_transition_date}}">
+                  </div>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.site_number_transition_date | date:'dd/MM/yyyy'}}
+                  </p>
+
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="partkingSpace">Parking Spaces</label>
+                  <input *ngIf="!isView" name="partkingSpace" type="text" formControlName="partkingSpace"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.parking_spaces}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="partkingSpaceType">Parking Spaces Type</label>
+                  <select *ngIf="!isView" name="type" formControlName="partkingSpaceType" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let space of parkingSpacesTypes; let j = index">
+                      {{ space }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.parking_spaces_type}}</p>
+
+                </div>
+
+              </div>
+
+
+              <div class="row padding-left-7px">
+
+                <div class="col-sm-4">
+                  <label for="seatingCapacity">Seating Capacity</label>
+                  <input *ngIf="!isView" name="seatingCapacity" type="text" formControlName="seatingCapacity"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.seating_capacity}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="mailAllowed">Mail Allowed</label>
+                  <select *ngIf="!isView" name="mailAllowed" formControlName="mailAllowed" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.is_mail_allowed?'Yes':'No'}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="dealType">Deal Type</label>
+                  <input *ngIf="!isView" name="dealType" type="text" formControlName="dealType" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.deal_type}}</p>
+
+                </div>
+              </div>
+
+              <div class="row padding-left-7px">
+
+                <div class="col-sm-4">
+                  <label for="longitude">Longitude</label>
+                  <input *ngIf="!isView" name="longitude" type="text" formControlName="longitude" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.longitude}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="latitude">Latitude</label>
+                  <input *ngIf="!isView" name="latitude" type="text" formControlName="latitude" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.latitude}}</p>
+
+                </div>
+
+              </div>
+
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="notes">Notes</label>
+                  <textarea *ngIf="!isView" formControlName="notes" name="notes" class="form-control"></textarea>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.notes?.length >
+                    0?restaurantDTO.restaurantDocument.notes[0].note:""}}</p>
+
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+
+
+          <div class="card">
+            <div class="card-header">Status History</div>
+            <ng-container *ngIf="!isView else viewRestaurantStatus">
+            <div class="card-body" formArrayName="statuses">
+              <div class="row content" *ngFor="let e of statuses.controls; let i = index" [formGroupName]="i">
+                <div class="row col-md-10">
+                <div class="col-sm-4">
+                  <label for="status" [ngClass]="{
+                          'label-error': !e.get('status').valid && e.get('status').touched
+                        }">Status<span style="color: #cc3f3f">*</span></label>
+                  <select *ngIf="!isView" name="status" formControlName="status" class="form-control">
+                      <option selected value="">Select</option>
+                    <option *ngFor="let rstatus of restaurantStatus; let j = index" value="{{ rstatus }}">
+                      {{ rstatus }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{e.get('status').value}}</p>
+                  <span class="error" *ngIf="!e.get('status').valid && e.get('status').touched">
+                    Select Status
+                  </span>
+                </div>
+                <div class="col-sm-4">
+                  <label for="fromDate">Begin Date<span class="color-red">*</span></label>
+                  <div class="input-group">
+                    <input *ngIf="!isView" class="form-control w-100" type="date" max="9999-12-31" placeholder="mm-dd-yyyy" name="fromDate"
+                      formControlName="fromDate">
+                    <small *ngIf="!e.get('fromDate').valid && e.get('fromDate').touched" class="error mt-1">Select Start
+                      Date</small>
+                  </div>
+                  <p *ngIf="isView" class="input-para">{{e.get('fromDate').value | date:dateFormat}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="thruDate">End Date </label>
+                  <div class="input-group">
+                    <input *ngIf="!isView" class="form-control w-100" type="date" max="9999-12-31" placeholder="yyyy-mm-dd" name="thruDate"
+                      formControlName="thruDate" [value]="e.get('thruDate').value">
+                    <small *ngIf="e.get('thruDate')?.hasError('endDateError')" class="error mt-1">End Date must be greater then Start Date</small>
+                  </div>
+                  <p *ngIf="isView" class="input-para">{{e.get('thruDate').value | date:dateFormat}}</p>
+                </div>
+              </div>
+                <div class="col-sm-2 d-flex justify-content-center align-items-center" (click)="deleteStatus(i)" *ngIf="statuses.controls.length > 1"
+                  style="color: #cc3f3f">
+                  <i-bs name="trash"></i-bs>
+                </div>
+              </div>
+            </div>
+            <div class="row add-new" *ngIf="statuses.controls.length <= 5">
+              <div class="col-sm-7"></div>
+              <div class="col-sm-5" *ngIf="!isView">
+                <p (click)="addStatus()">
+                  <i-bs name="plus-circle"></i-bs>
+                  <span>Add New</span>
+                </p>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #viewRestaurantStatus>
+            <div class="row">
+              <div class="row address-row-box col-md-10">
+                <div class="col-sm-12">
+                  <div class="row ms-1">
+                    <div class="col-sm-4">
+                      <label for="type">Status</label>
+                      <p class="input-para">{{activeStatuses?.length>0?activeStatuses[0]?.status:''}}</p>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <label for="address1">Begin Date</label>
+                      <p class="input-para">{{activeStatuses?.length>0?(activeStatuses[0]?.from_date | date:dateFormat):''}}</p>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <label for="address1">End Date</label>
+                      <p class="input-para">{{activeStatuses?.length>0?(activeStatuses[0]?.thru_date | date:dateFormat):''}}</p>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+              <div class="col-sm-2 d-flex flex-row-reverse " *ngIf="nonActiveStatues?.length > 0">
+                <a class="accordion-button" (click)=hideDivStatus(0) [ngClass]="{ 'collapsed': true }"
+                  type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_moreStatuses'"
+                  aria-expanded="true" [attr.aria-controls]="'collapse_moreStatuses'">
+                  <p class="margin-top-13">
+                    <a class="more-info">
+                      {{nonActiveStatues.length}} More
+                      <span>
+                        <i-bs id="icon-down_status{{0}}" name="chevron-down"></i-bs>
+                        <i-bs id="icon-up_status{{0}}" style="display: none;" name="chevron-up"></i-bs>
+                      </span>
+                    </a>
+                  </p>
+                </a>
+              </div>
+            </div>
+
+
+            <div class="row" [id]="'collapse_moreStatuses'" class="collapse">
+              <div class="card-body">
+                <div class="row address-row-box"
+                *ngFor="let status of nonActiveStatues; let i = index;">
+                <hr class="style1">
+                <div class="col-md-10">
+                  <div class="row">
+                    <div class="col-sm-4 ps-3">
+                      <label for="type">Status</label>
+                      <p class="input-para">{{status.status}}</p>
+                    </div>
+
+                    <div class="col-sm-4 ps-2">
+                      <label for="address1">Begin Date</label>
+                      <p class="input-para">{{status.from_date | date:dateFormat}}</p>
+                    </div>
+
+                    <div class="col-sm-4 ps-1">
+                      <label for="address1">End Date</label>
+                      <p class="input-para">{{status.thru_date | date:dateFormat}}</p>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+              </div>
+            </div>
+
+          </ng-template>
+
+          </div>
+
+
+          <div class="card" *ngIf="isView && franchiseeInfo?.length>0">
+            <div class="card-header">Franchisee Information</div>
+            <div class="card-body">
+              <div class="row content"
+                *ngFor="let franchisee of franchiseeInfo; let i = index">
+                <div class="col-sm-4">
+                  <label for="status">Franchisee Name</label>
+                  <p class="input-para">{{getFranchiseeName(franchisee.aligned_id)}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="status">Begin Date</label>
+                  <p class="input-para">{{franchisee.from_date | date:dateFormat}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="status">End Date</label>
+                  <p class="input-para">{{franchisee.thru_dt | date:dateFormat}}</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card" *ngIf="isView && DCInfo?.length >0">
+            <div class="card-header">Distribution Center Information</div>
+            <div class="card-body">
+              <div class="row content padding-left-7px"
+                *ngFor="let dc of DCInfo; let i = index">
+                <div class="col-sm-4">
+                  <label for="status">Distribution Center Name</label>
+                  <p class="input-para">{{getFacilityName(dc.aligned_id)}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="status">Begin Date</label>
+                  <p class="input-para">{{dc.from_date | date:dateFormat}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="status">End Date</label>
+                  <p class="input-para">{{dc.thru_dt | date:dateFormat}}</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">Additional information</div>
+            <div class="card-body" formGroupName="additionalInfo">
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="rating">Rating</label>
+                  <select *ngIf="!isView" name="type" formControlName="rating" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let rating of ratingType; let j = index" value="{{rating}}">
+                      {{ rating }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.rating}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="archGroupType">Arch Group Type</label>
+                  <select *ngIf="!isView" name="archGroupType" formControlName="archGroupType" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let agtype of archGroupTypes; let j = index" value="{{ agtype }}">
+                      {{ agtype }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.arch_group_type}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="archType">Arch Type</label>
+                  <select *ngIf="!isView" name="archType" formControlName="archType" class="form-control">
+                    <option [value]=null selected>Select</option>
+                    <option *ngFor="let archtype of archTypes; let j = index" value="{{ archtype }}">
+                      {{ archtype }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.arch_type}}</p>
+                </div>
+
+              </div>
+
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="driveThruType">Drive Thru Type</label>
+                  <select *ngIf="!isView" name="driveThruType" formControlName="driveThruType" class="form-control">
+                    <option [value]=null selected>Select</option>
+                    <option *ngFor="let dthruType of driveThruTypes; let j = index" value="{{dthruType}}">
+                      {{ dthruType }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.drive_thru_type}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="driveThruCars">Drive Thru Car</label>
+
+                  <input *ngIf="!isView" name="driveThruCars" type="text" formControlName="driveThruCars"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.drive_thru_cars}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="playGroundType">Playground Type</label>
+                  <select *ngIf="!isView" name="playGroundType" formControlName="playGroundType" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let playgType of playgroundType; let j = index" value="{{ playgType }}">
+                      {{ playgType }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.playground_type}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+
+                <div class="col-sm-4">
+                  <label for="kitchenType">Kitchen Type</label>
+                  <select *ngIf="!isView" name="kitchenType" formControlName="kitchenType" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let ktype of kitchenTypes; let j = index" value="{{ ktype }}">
+                      {{ ktype }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.kitchen_type}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="dinningType">Dining Type</label>
+                  <select *ngIf="!isView" name="dinningType" formControlName="dinningType" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option *ngFor="let dtype of dinningTypes; let j = index" value="{{ dtype }}">
+                      {{ dtype }}
+                    </option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.dining_type}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="propertyCD">Property CD</label>
+
+                  <input *ngIf="!isView" name="propertyCD" type="text" formControlName="propertyCD"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.property_code}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="bldgArea">Bldg Area</label>
+                  <input *ngIf="!isView" name="bldgArea" type="text" formControlName="bldgArea" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.building_area}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="bldgAreaUOM">Bldg Area UOM</label>
+                  <select *ngIf="!isView" name="bldgAreaUOM" class="form-control" formControlName="bldgAreaUOM">
+                    <option [value]=null selected>Select</option>
+                    <option value="Square Feet">Square Feet</option>
+
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.building_area_uom}}</p>
+
+                </div>
+                <div class="col-sm-4">
+                  <label for="bldgFrontage">Bldg Frontage</label>
+                  <input *ngIf="!isView" name="bldgFrontage" type="text" formControlName="bldgFrontage"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.building_frontage}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="bldgFrontageUOM">Bldg Frontage UOM</label>
+                  <select *ngIf="!isView" name="bldgFrontageUOM" class="form-control" formControlName="bldgFrontageUOM">
+                    <option selected [value]=null>Select</option>
+                    <option value="Feet">Feet</option>
+
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.building_frontage_uom}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="landArea">Land Area</label>
+                  <input *ngIf="!isView" name="landArea" type="text" formControlName="landArea" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.land_area}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="landAreaUOM">Land Area UOM</label>
+                  <select *ngIf="!isView" name="landAreaUOM" class="form-control" formControlName="landAreaUOM">
+                    <option selected [value]=null>Select</option>
+                    <option value="Square Feet">Square Feet</option>
+
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.land_area_uom}}</p>
+
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="landFrontageLength">Land Frontage Length</label>
+                  <input *ngIf="!isView" name="landFrontageLength" type="text" formControlName="landFrontageLength"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.land_frontage_length}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="landFrontageLengthUOM">Land Frontage Length UOM</label>
+                  <select *ngIf="!isView" name="landFrontageLengthUOM" class="form-control"
+                    formControlName="landFrontageLengthUOM">
+                    <option selected [value]=null>Select</option>
+                    <option value="Feet">Feet</option>
+
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.land_frontage_length_uom}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="operatorCompanyCD">Operator Company CD</label>
+                  <input *ngIf="!isView" name="operatorCompanyCD" type="text" formControlName="operatorCompanyCD"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operator_company_code}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="costCenterCD">Cost Center CD</label>
+                  <input *ngIf="!isView" name="costCenterCD" type="text" formControlName="costCenterCD"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.cost_center_code}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="costGroup">Cost Group #</label>
+                  <input *ngIf="!isView" name="costGroup" type="text" formControlName="costGroup" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.cost_group_number}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="signImageCode">Sign Image Code</label>
+                  <input *ngIf="!isView" name="signImageCode" type="text" formControlName="signImageCode"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.sign_image_code}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="signImageDate">Sign Image Date</label>
+                  <div *ngIf="!isView" class="input-group">
+                    <input class="form-control" type="date" max="9999-12-31" placeholder="yyyy-mm-dd" name="signImageDate"
+                      formControlName="signImageDate">
+                  </div>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.sign_image_date | date:'dd/MM/yyyy'}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="signImageExpInd">Sign Image Expiration Indicator</label>
+
+                  <select *ngIf="!isView" name="signImageExpInd" formControlName="signImageExpInd" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+
+                  <p *ngIf="isView" class="input-para">
+                    {{restaurantDTO.restaurantDocument.is_sign_image_expired?'Yes':'No'}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="debitCreditAllowedInd">Debit/Credit Card Allowed Indicator</label>
+                  <select *ngIf="!isView" name="debitCreditAllowedInd" formControlName="debitCreditAllowedInd"
+                    class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">
+                    {{restaurantDTO.restaurantDocument.is_debit_credit_card_allowed?'Yes':'No'}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="debitCreditTerms">Debit/Credit Card Terms</label>
+                  <input *ngIf="!isView" name="debitCreditTerms" type="text" formControlName="debitCreditTerms"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.debit_credit_card_terms}}</p>
+                </div>
+
+
+                <div class="col-sm-4">
+                  <label for="demographic">Demographic</label>
+                  <input *ngIf="!isView" name="demographic" type="text" formControlName="demographic"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.demographic}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="opHrsStdCode">Operating Hours Standard Code</label>
+                  <input *ngIf="!isView" name="opHrsStfdCode" type="text" formControlName="opHrsStdCode"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operating_hours_standard_code}}
+                  </p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="opOpenCode">Operating Open Code</label>
+                  <input *ngIf="!isView" name="opOpenCode" type="text" formControlName="opOpenCode"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operating_open_code}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="opHrsLateNightCD">Operating Hours Late Night CD</label>
+                  <input *ngIf="!isView" name="opHrsLateNightCD" type="text" formControlName="opHrsLateNightCD"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">
+                    {{restaurantDTO.restaurantDocument.operating_hours_late_night_code}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="opHrsEarlyBreakfastCD">Operating Hours Early Breakfast CD</label>
+                  <input *ngIf="!isView" name="opHrsEarlyBreakfastCD" type="text" formControlName="opHrsEarlyBreakfastCD"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">
+                    {{restaurantDTO.restaurantDocument.operating_hours_early_breakfast_code}}</p>
+                </div>
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="opHrs24CD">Operating Hours 24 Hours CD</label>
+                  <input *ngIf="!isView" name="opHrs24CD" type="text" formControlName="opHrs24CD" class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.operating_hours_24_hours_code}}
+                  </p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="crtCertDT">CRT Certification DT</label>
+                  <div class="input-group">
+                    <input *ngIf="!isView" class="form-control" type="date" max="9999-12-31" placeholder="yyyy-mm-dd" name="crtCertDT"
+                      formControlName="crtCertDT">
+                    <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.crt_certification_date | date:'dd/MM/yyyy'}}</p>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <label for="crtCertInd">CRT Certified Ind</label>
+
+                  <select *ngIf="!isView" name="crtCertInd" formControlName="crtCertInd" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.is_crt_certified?'Yes':'No'}}</p>
+                </div>
+
+              </div>
+              <div class="row padding-left-7px">
+                <div class="col-sm-4">
+                  <label for="crtIdfdInd">CRT Identified Ind</label>
+                  <select *ngIf="!isView" name="crtIdfdInd" formControlName="crtIdfdInd" class="form-control">
+                    <option selected [value]=null>Select</option>
+                    <option value=1>Yes</option>
+                    <option value=0>No</option>
+                  </select>
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.is_crt_identified?'Yes':'No'}}</p>
+                </div>
+
+                <div class="col-sm-4">
+                  <label for="reportingOptrNum">Reporting Operator #</label>
+                  <input *ngIf="!isView" name="reportingOptrNum" type="text" formControlName="reportingOptrNum"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.reporting_operator_number}}</p>
+                </div>
+                <div class="col-sm-4">
+                  <label for="reportingOptrName">Reporting Operator Name</label>
+                  <input *ngIf="!isView" name="reportingOptrName" type="text" formControlName="reportingOptrName"
+                    class="form-control" />
+                  <p *ngIf="isView" class="input-para">{{restaurantDTO.restaurantDocument.reporting_operator_name}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="card">
+            <div class="card-header">Phone Number</div>
+            <ng-container *ngIf="!isView else viewPhoneAddress">
+              <div class="card-body" formArrayName="phoneNumber">
+                <div class="row content" *ngFor="let ph of phoneNumber.controls; let i = index" [formGroupName]="i">
+                  <div class="col-sm-4">
+                    <label [ngClass]="{
+                    'label-error':
+                      !ph.get('type').valid && ph.get('type').touched
+                  }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control">
+                      <option selected value="">Select</option>
+                      <option *ngFor="let phAdType of allPhoneTypes; let k = index" value="{{ phAdType }}">
+                        {{ phAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!ph.get('type').valid && ph.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="countryCode" [ngClass]="{
+                          'label-error':
+                            !ph.get('countryCode').valid &&
+                            ph.get('countryCode').touched
+                        }">Country Code<span style="color: #cc3f3f">*</span></label>
+                    <select name="countryCode" formControlName="countryCode" class="form-control">
+                      <option selected value=''>Select</option>
+                      <option value="{{ availableGeoLocations.usa.phoneCountryCode}}">
+                        {{ availableGeoLocations.usa.phoneCountryCode}}</option>
+                      <option value="{{ availableGeoLocations.canada.phoneCountryCode}}">
+                          {{ availableGeoLocations.canada.phoneCountryCode}}</option>
+                      <option
+                          value="{{ availableGeoLocations.mexico.phoneCountryCode}}">
+                          {{ availableGeoLocations.mexico.phoneCountryCode}}</option>
+                      <option
+                          value="{{ availableGeoLocations.china.phoneCountryCode}}">
+                          {{ availableGeoLocations.china.phoneCountryCode}}</option>
+                      <option
+                          value="{{ availableGeoLocations.australia.phoneCountryCode}}">
+                          {{ availableGeoLocations.australia.phoneCountryCode}}</option>
+                      <option
+                          value="{{ availableGeoLocations.guatemala.phoneCountryCode}}">
+                          {{ availableGeoLocations.guatemala.phoneCountryCode}}</option>
+                      <option
+                          value="{{ availableGeoLocations.netherlands.phoneCountryCode}}">
+                          {{ availableGeoLocations.netherlands.phoneCountryCode}}</option>
+                    </select>
+                    <span class="error" *ngIf="
+                          !ph.get('countryCode').valid &&
+                          ph.get('countryCode').touched
+                        ">
+                      Select Country Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="areacode" [ngClass]="{
+                          'label-error':
+                            !ph.get('areaCode').valid && ph.get('areaCode').touched
+                        }">Area Code<span style="color: #cc3f3f">*</span></label>
+                    <input type="text" name="areacodee" formControlName="areaCode" class="form-control" />
+                    <span class="error" *ngIf="
+                          !ph.get('areaCode').valid && ph.get('areaCode').touched
+                        ">
+                      Enter Area Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="phNumber" [ngClass]="{
+                          'label-error':
+                            !ph.get('phNumber').valid &&
+                            ph.get('phNumber').touched
+                        }">Phone Number<span style="color: #cc3f3f">*</span></label>
+                    <input type="text" name="phNumber" formControlName="phNumber" maxlength="18" min="7" class="form-control" />
+                    <span class="error" *ngIf="
+                          !ph.get('phNumber').valid &&
+                          ph.get('phNumber').touched
+                        ">
+                      Enter Phone Number
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="extention">Extension</label>
+                    <input name="extention" type="text" formControlName="extentsion" class="form-control" />
+                    <input type="checkbox" class="isprimary" formControlName="isPrimary"
+                    (click)="onIsPrimaryAddressChecked(ph,$event,i,'phoneNumber')"/>
+                    Is Primary
+                  </div>
+                  <div class="col-sm-4" (click)="deletePhoneNumber(i)" *ngIf="phoneNumber.controls.length > 1"
+                    style="color: #cc3f3f">
+                    <i-bs name="trash"></i-bs>
+                  </div>
+                </div>
+                <div class="row add-new" *ngIf="phoneNumber.controls.length <= 5">
+                  <div class="col-sm-7"></div>
+                  <div class="col-sm-5">
+                    <p (click)="addPhoneNumber()">
+                      <i-bs name="plus-circle"></i-bs>
+                      <span>Add Phone Number</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #viewPhoneAddress>
+              <div class="row">
+                <div class="row address-row-box"
+                  *ngFor="let phone of restaurantDTO.restaurantDocument?.phone_addresses  | bItemFilter:'is_primary':true; let i = index;">
+                  <div class="col-sm-12">
+                    <div class="row ms-1">
+                      <div class="col-sm-4">
+                        <label for="type">Type</label>
+                        <p class="input-para">{{restaurantDTO.restaurantDocument.phone_addresses[i].type}}</p>
+                      </div>
+
+                      <div class="col-sm-4">
+                        <label for="country_code">Country Code</label>
+                        <p class="input-para">{{restaurantDTO.restaurantDocument.phone_addresses[i].country_code}}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label for="area_code">Area Code</label>
+                        <p class="input-para">{{restaurantDTO.restaurantDocument.phone_addresses[i].area_code}}</p>
+                      </div>
+
+                    </div>
+                    <div class="row margin-top-13 ms-1">
+                      <div class="col-sm-4">
+                        <label for="phone_number">Phone Number</label>
+                        <p class="input-para">{{restaurantDTO.restaurantDocument.phone_addresses[i].phone_number}}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label for="extension">Extension</label>
+                        <p class="input-para">
+                          {{restaurantDTO.restaurantDocument?.phone_addresses[i].phone_extension}}
+                        </p>
+                      </div>
+
+                      <div class="col-sm-2">
+                        <label style="margin-top: 20px;" for="country">
+                          <input class="minority" type="checkbox" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="restaurantDTO.restaurantDocument?.phone_addresses[i].is_primary"
+                            [attr.disabled]="!isEditing ? 'disabled' :null">Is Primary</label>
+
+                      </div>
+
+                      <div class=" col-sm-2 margin-left-35" *ngIf="non_PrimaryPhoneAddress?.length > 0">
+                        <a class="accordion-button" (click)=hideDivPh(i) [ngClass]="{ 'collapsed': true }"
+                          type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_morePh'"
+                          aria-expanded="true" [attr.aria-controls]="'collapse_morePh'">
+                          <p class="margin-top-13">
+                            <a class="more-info">
+                              {{non_PrimaryPhoneAddress?.length}} More
+                              <span>
+                                <i-bs id="icon-down_ph{{i}}" name="chevron-down"></i-bs>
+                                <i-bs id="icon-up_ph{{i}}" style="display: none;" name="chevron-up"></i-bs>
+                              </span>
+                            </a>
+                          </p>
+                        </a>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+
+
+              <div class="row" [id]="'collapse_morePh'" class="collapse">
+                <div class="card-body">
+                  <div class="row address-row-box" *ngFor="let phone of non_PrimaryPhoneAddress; let i = index;">
+                    <hr class="style1">
+
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <div class="col-sm-4">
+                          <label for="type">Type</label>
+                          <p class="input-para">{{phone.type}}</p>
+                        </div>
+
+                        <div class="col-sm-4">
+                          <label for="country_code">Country Code</label>
+                          <p class="input-para">{{phone.country_code}}</p>
+                        </div>
+                        <div class="col-sm-4">
+                          <label for="area_code">Area Code</label>
+                          <p class="input-para">{{phone.area_code}}</p>
+                        </div>
+
+                      </div>
+                      <div class="row margin-top-13">
+                        <div class="col-sm-4">
+                          <label for="phone_number">Phone Number</label>
+                          <p class="input-para">{{phone.phone_number}}</p>
+                        </div>
+                        <div class="col-sm-4">
+                          <label for="extension">Extension</label>
+                          <p class="input-para">
+                            {{phone.phone_extension}}
+                          </p>
+                        </div>
+
+
+                      </div>
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+
+            </ng-template>
+          </div>
+          <div class="card">
+            <div class="card-header">Postal Address</div>
+            <ng-container *ngIf="!isView else viewPostalAdress">
+              <div class="card-body" formArrayName="postalAddress">
+                <div class="row content" *ngFor="let pa of postalAddress.controls; let i = index" [formGroupName]="i">
+                  <div class="col-sm-4">
+                    <label for="type" [ngClass]="{
+                          'label-error':
+                            !pa.get('type').valid && pa.get('type').touched
+                        }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control" value="{{pa.get('type').value}}">
+                      <option value="" selected>Select</option>
+                      <option *ngFor="let postalAdType of postalAddressTypes;let j = index" value="{{ postalAdType }}">
+                        {{ postalAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!pa.get('type').valid && pa.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="address1" [ngClass]="{
+                          'label-error':
+                            !pa.get('address1').valid && pa.get('address1').touched
+                        }">Address 1<span style="color: #cc3f3f">*</span></label>
+                    <input name="address1" type="text" formControlName="address1" class="form-control" />
+                    <span class="error" *ngIf="
+                          !pa.get('address1').valid && pa.get('address1').touched
+                        ">
+                      Enter Address1
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="address2">Address 2</label>
+                    <input name="address2" type="text" formControlName="address2" class="form-control" />
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="city" [ngClass]="{
+                          'label-error':
+                            !pa.get('city').valid && pa.get('city').touched
+                        }">City<span style="color: #cc3f3f">*</span></label>
+                    <input name="city" formControlName="city" class="form-control" type="text" />
+                    <span class="error" *ngIf="!pa.get('city').valid && pa.get('city').touched">
+                      Enter City
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="state" [ngClass]="{
+                          'label-error':
+                            !pa.get('state').valid && pa.get('state').touched
+                        }">State<span style="color: #cc3f3f">*</span></label>
+                    <select name="state" formControlName="state" class="form-control">
+                      <option selected value="">Select</option>
+                      <optgroup label="USA">
+                        <option *ngFor="let loc of availableGeoLocations.usa.states"
+                          value="{{ loc.code }}:{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="Canada">
+                        <option *ngFor="let loc of availableGeoLocations.canada.states"
+                          value="{{ loc.code }}:{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                      <optgroup label="Mexico">
+                        <option *ngFor="let loc of availableGeoLocations.mexico.states"
+                          value="{{ loc.code }}:{{ loc.state }}">
+                          {{ loc.state }}
+                        </option>
+                      </optgroup>
+                    </select>
+                    <span class="error" *ngIf="!pa.get('state').valid && pa.get('state').touched">
+                      Select State
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="postalcode" [ngClass]="{
+                          'label-error':
+                            !pa.get('postalCode').valid &&
+                            pa.get('postalCode').touched
+                        }">Postal Code<span style="color: #cc3f3f">*</span></label>
+                    <input name="address2" type="text" formControlName="postalCode" class="form-control" />
+                    <span class="error" *ngIf="
+                          !pa.get('postalCode').valid && pa.get('postalCode').touched
+                        ">
+                      Enter Postal Code
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="country" [ngClass]="{
+                          'label-error':
+                            !pa.get('country').valid && pa.get('country').touched
+                        }">Country<span style="color: #cc3f3f">*</span></label>
+                    <select name="country" formControlName="country" class="form-control">
+                      <option selected value="">Select</option>
+                      <option value="canada">Canada</option>
+                      <option value="mexico">Mexico</option>
+                    </select>
+                    <span class="error" *ngIf="!pa.get('country').valid && pa.get('country').touched">
+                      Select Country
+                    </span>
+                    <input type="checkbox" class="isprimary" formControlName="isPrimary"
+                    (click)="onIsPrimaryAddressChecked(pa,$event,i,'postalAddress')"/>
+                    Is Primary
+                  </div>
+                  <div class="col-sm-4" (click)="deletePostalAddress(i)" *ngIf="postalAddress.controls.length > 1"
+                    style="color: #cc3f3f">
+                    <i-bs name="trash"></i-bs>
+                  </div>
+                </div>
+                <div class="row add-new" *ngIf="postalAddress.controls.length <= 5">
+                  <div class="col-sm-7"></div>
+                  <div class="col-sm-5">
+                    <p (click)="addPostalAddress()">
+                      <i-bs name="plus-circle"></i-bs>
+                      <span>Add Postal Address</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #viewPostalAdress>
+              <div class="row">
+                <div class="row address-row-box ms-1"
+                  *ngFor="let address of restaurantDTO.restaurantDocument?.postal_addresses  | bItemFilter:'is_primary':true; let i = index;">
+                  <div class="col-sm-12">
+                    <div class="row">
+                      <div class="col-sm-4">
+                        <label for="type">Type</label>
+                        <p class="input-para">{{address.type}}</p>
+                      </div>
+
+                      <div class="col-sm-4">
+                        <label for="address1">Address 1</label>
+                        <p class="input-para">{{address.address_1}}</p>
+                      </div>
+                      <div class="col-sm-4">
+
+                        <label for="address2">Address 2</label>
+                        <p class="input-para">{{address.address_2}}</p>
+                      </div>
+
+                    </div>
+                    <div class="row margin-top-13">
+                      <div class="col-sm-4">
+                        <label for="city">City</label>
+                        <p class="input-para">{{address.city}}</p>
+                      </div>
+                      <div class="col-sm-4">
+                        <label for="state">State</label>
+                        <p class="input-para">{{address.state_name}}</p>
+                      </div>
+
+
+                      <div class="col-sm-4">
+                        <label for="postalCode">Postal Code</label>
+                        <p class="input-para">{{address.postal_code}}</p>
+                      </div>
+                    </div>
+                    <div class="row margin-top-13">
+                      <div class="col-sm-4">
+                        <label for="country">Country</label>
+                        <p class="input-para">{{address.country_name}}</p>
+                      </div>
+
+                      <div class="col-sm-4">
+                        <label style="margin-top: 20px;" for="country">
+                          <input class="minority" type="checkbox" [ngModelOptions]="{standalone: true}"
+                            [(ngModel)]="address.is_primary" [attr.disabled]="'disabled'">Is Primary</label>
+
+                      </div>
+                      <div class="col-sm-2"></div>
+                      <div class="col-sm-2 margin-left-35" *ngIf="non_PrimaryPostalAddress?.length > 0">
+                        <a class="accordion-button" (click)=hideDivPostal(i) [ngClass]="{ 'collapsed': true }"
+                          type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_morePostal'"
+                          aria-expanded="true" [attr.aria-controls]="'collapse_morePostal'">
+                          <p class="margin-top-13">
+                            <a class="more-info">
+                              {{non_PrimaryPostalAddress.length}} More
+                              <span>
+                                <i-bs id="icon-down_postal{{i}}" name="chevron-down"></i-bs>
+                                <i-bs id="icon-up_postal{{i}}" style="display: none;" name="chevron-up"></i-bs>
+                              </span>
+                            </a>
+                          </p>
+                        </a>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+
+
+              <div class="row" [id]="'collapse_morePostal'" class="collapse">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="row address-row-box" *ngFor="let address of non_PrimaryPostalAddress; let i = index;">
+                      <hr class="style1">
+                      <div class="col-sm-12">
+                        <div class="row">
+                          <div class="col-sm-4">
+                            <label for="type">Type</label>
+                            <p class="input-para">{{address.type}}</p>
+                          </div>
+
+                          <div class="col-sm-4">
+                            <label for="address1">Address 1</label>
+                            <p class="input-para">{{address.address_1}}</p>
+                          </div>
+                          <div class="col-sm-4">
+
+                            <label for="address2">Address 2</label>
+                            <p class="input-para">{{address.address_2}}</p>
+                          </div>
+
+                        </div>
+                        <div class="row margin-top-13">
+                          <div class="col-sm-4">
+                            <label for="city">City</label>
+                            <p class="input-para">{{address.city}}</p>
+                          </div>
+                          <div class="col-sm-4">
+                            <label for="state">State</label>
+                            <p class="input-para">{{address.state_name}}</p>
+                          </div>
+
+
+                          <div class="col-sm-4">
+                            <label for="postalCode">Postal Code</label>
+                            <p class="input-para">{{address.postal_code}}</p>
+                          </div>
+                        </div>
+                        <div class="row margin-top-13">
+                          <div class="col-sm-4">
+                            <label for="country">Country</label>
+                            <p class="input-para">{{address.country_name}}</p>
+                          </div>
+
+                          <div class="col-sm-4">
+                            <label style="margin-top: 20px;" for="country">
+                              <input class="minority" type="checkbox" [ngModelOptions]="{standalone: true}"
+                                [(ngModel)]="address.is_primary" [attr.disabled]="'disabled'">Is Primary</label>
+                          </div>
+
+
+                        </div>
+                      </div>
+
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </ng-template>
+          </div>
+          <div class="card">
+            <div class="card-header">Email</div>
+            <ng-container *ngIf="!isView else viewEmailAdress">
+              <div class="card-body" formArrayName="email">
+                <div class="row content" *ngFor="let e of email.controls; let i = index" [formGroupName]="i">
+                  <div class="col-sm-4">
+                    <label for="type" [ngClass]="{
+                          'label-error': !e.get('type').valid && e.get('type').touched
+                        }">Type<span style="color: #cc3f3f">*</span></label>
+                    <select name="type" formControlName="type" class="form-control">
+                      <option selected value=''>Select</option>
+                      <option *ngFor="let elctronicAdType of allEmailTypes; let j = index" value="{{ elctronicAdType }}">
+                        {{ elctronicAdType }}
+                      </option>
+                    </select>
+                    <span class="error" *ngIf="!e.get('type').valid && e.get('type').touched">
+                      Select Type
+                    </span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="email" [ngClass]="{
+                          'label-error':
+                            !e.get('email').valid && e.get('email').touched
+                        }">{{ email.controls[i].value.type
+                      }}<span style="color: #cc3f3f">*</span></label>
+                    <input type="text" name="email" formControlName="email" class="form-control" />
+                    <span class="error" *ngIf="!e.get('email').valid && e.get('email').touched">
+                      <span *ngIf="e.get('email').errors?.['required']">
+                        Enter {{ email.controls[i].value.type }}
+                      </span>
+                      <span
+                        *ngIf="!e.get('email').errors?.['required'] && email.controls[i].value.type ==='Email'  && e.get('email').errors?.['invalidEmailAddress']">
+                        Enter Valid Email
+                      </span>
+                      <span
+                        *ngIf="!e.get('email').errors?.['required'] && email.controls[i].value.type ==='Website'  && e.get('email').errors?.['invalidWebsiteAddress']">
+                        Enter Valid Website Url
+                      </span>
+                    </span>
+                  </div>
+                  <div class="col-sm-2">
+                    <br />
+                    <br />
+                    <input type="checkbox" class="isprimary" formControlName="isPrimary"
+                    (click)="onIsPrimaryAddressChecked(e,$event,i,'email')"/>                    Is Primary
+                  </div>
+                  <div class="col-sm-4" (click)="deleteEmail(i)" *ngIf="email.controls.length > 1" style="color: #cc3f3f">
+                    <i-bs name="trash"></i-bs>
+                  </div>
+                </div>
+              </div>
+              <div class="row add-new" *ngIf="email.controls.length <= 5">
+                <div class="col-sm-7"></div>
+                <div class="col-sm-5">
+                  <p (click)="addEmail()">
+                    <i-bs name="plus-circle"></i-bs>
+                    <span>Add New</span>
+                  </p>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <ng-template #viewEmailAdress>
+            <div class="row">
+              <div class="row address-row-box"
+                *ngFor="let email of restaurantDTO.restaurantDocument.electronic_addresses?.electronic_email_addresses  | bItemFilter:'is_primary':true; let i = index;">
+                <div class="col-sm-12">
+
+                  <div class="row ms-2">
+                    <div class="col-sm-4">
+                      <label for="type">Type</label>
+                      <p class="input-para">{{email.type}}</p>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <label for="email">{{email.type}}</label>
+                      <p class="input-para">{{email.email}}</p>
+                    </div>
+                    <div class="col-sm-2">
+                      <label style="margin-top: 20px;" for="is_primary">
+                        <input class="is_primary" type="checkbox" [ngModelOptions]="{standalone: true}"
+                          [(ngModel)]="email.is_primary" [attr.disabled]="'disabled'">
+                        Is Primary</label>
+
+                    </div>
+
+                    <div class=" col-sm-2 margin-left-35" *ngIf="non_primaryEletronicsAddress?.length > 0">
+                      <a class="accordion-button" style="border: 1px solid #ffffff" (click)=hideDivEmail(i) [ngClass]="{ 'collapsed': true }"
+                        type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse_moreEmail'"
+                        aria-expanded="true" [attr.aria-controls]="'collapse_moreEmail'">
+                        <p class="margin-top-13">
+                          <a class="more-info">
+                            {{non_primaryEletronicsAddress.length}} More
+                            <span>
+                              <i-bs id="icon-down_email{{i}}" name="chevron-down"></i-bs>
+                              <i-bs id="icon-up_email{{i}}" style="display: none;" name="chevron-up"></i-bs>
+                            </span>
+                          </a>
+                        </p>
+                      </a>
+                    </div>
+                  </div>
+
+                </div>
+
+
+              </div>
+            </div>
+
+
+            <div class="row" [id]="'collapse_moreEmail'" class="collapse">
+              <div class="card-body">
+                <div class="row">
+                  <div class="row address-row-box" *ngFor="let email of non_primaryEletronicsAddress; let i = index;">
+                    <div class="col-sm-12">
+                      <hr class="style1">
+                      <div class="row">
+                        <div class="col-sm-4">
+                          <label for="type">Type</label>
+                          <p class="input-para">{{email.type}}</p>
+                        </div>
+
+                        <div class="col-sm-4">
+                          <label for="email">{{email.type}}</label>
+                          <p class="input-para">{{email.email}}</p>
+                        </div>
+                        <div class="col-sm-2">
+                          <label style="margin-top: 20px;" for="is_primary">
+                            <input class="is_primary" type="checkbox" [ngModelOptions]="{standalone: true}"
+                              [(ngModel)]="email.is_primary" [attr.disabled]="'disabled'">
+                            Is Primary</label>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </ng-template>
+
+        </div>
+      </div>
+
+      <div class="action-buttons" *ngIf="!isView">
+        <div class="d-flex justify-content-between px-2">
+          <div class="col-auto mt-1"></div>
+          <div class="col-auto  mt-1" style="text-align: right">
+            <button class="action-button" type="button" (click)="goback()">Cancel</button>
+            <button type="submit" class="action-button create-contact-btn">{{isEditing?'Update':'Create'}}</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>

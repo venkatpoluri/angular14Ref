@@ -1,0 +1,105 @@
+<div class="fixed-box">
+    <div class="table-container">
+        <div class="no-data" *ngIf="!dataGridData">
+            <h3>Please select a supply chain period</h3>
+        </div>
+            <table class="table" [formGroup]="tableForm"  *ngIf="dataGridData">
+                <thead>
+                    <th class="check-inp "><input type="checkbox"
+                            (click)="CheckAllOptions($event)">
+                    </th>
+                    <th><strong>Source Facility</strong></th>
+                    <th><strong>Price Type</strong></th>
+                    <th *ngFor="let col of priceComponentCols"><strong>{{col.name}}</strong></th>
+                    <!-- <th><strong>Contract FOB</strong></th>
+                    <th><strong>Revenue</strong></th>
+                    <th><strong>Invoice FOB</strong></th>
+                    <th *ngIf="isMexicanConcept"><strong>Import Source</strong></th>
+                    <th *ngIf="isMexicanConcept"><strong>Destination Source</strong></th> -->
+                    <th><strong>% Allocation</strong></th>
+                    <th><strong>Supply Agreement</strong></th>
+                    <th><strong>Freight Pricing</strong></th>
+                </thead>
+                <tbody>
+                    <ng-container formArrayName="itemPricingDetails" *ngIf="dataGridData">
+
+                        <tr *ngFor="let pricing of itemPricingDetails?.controls; let i = index;" [formGroupName]="i">
+                            <td>
+                                <input type="checkbox" id="checked{{i}}" />
+                            </td>
+                            <td>
+                                <input type="text" formControlName="sourceFacilityName"
+                                    [value]="pricing.get('sourceFacilityName').value" class="form-control form-control-sm"
+                                    id="sourceFacilityName" [disabled]="!isEditing"/>
+                            </td>
+                            <td>
+                                <select name="type" formControlName="pricingType" class="form-control form-control-sm"
+                                    value="{{pricing.get('pricingType').value}}" [disabled]="!isEditing">
+                                    <option value="">Select</option>
+                                    <option value="{{ pricing.get('pricingType').value }}">
+                                        {{ pricing.get('pricingType').value }}
+                                    </option>
+                                </select>
+                            </td>
+                            <td *ngFor="let col of priceComponentCols">
+                                <input type="text" [formControlName]="col.varName" 
+                                class="form-control form-control-sm" [id]="col.varName" [value]="pricing.get(col.varName).value" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td>
+                            <!-- <td>
+                                <input type="text" formControlName="FOB" [value]="pricing.get('FOB').value"
+                                    class="form-control form-control-sm" id="FOB" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="Revenue" [value]="pricing.get('Revenue').value"
+                                    class="form-control form-control-sm" id="Revenue" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td>
+                            <td>
+                                <input type="text" formControlName="Invoice" [value]="pricing.get('Invoice').value"
+                                    class="form-control form-control-sm" id="Invoice" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td>
+                            <td *ngIf="isMexicanConcept">
+                                <input type="text" formControlName="ImportCostSource" [value]="pricing.get('ImportCostSource').value"
+                                    class="form-control form-control-sm" id="ImportCostSource" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td>
+                            <td *ngIf="isMexicanConcept">
+                                <input type="text" formControlName="ImportCostDestination" [value]="pricing.get('ImportCostDestination').value"
+                                    class="form-control form-control-sm" id="ImportCostDestination" [disabled]="!isEditing" *ngIf="pricing.get('type').value!=='Redistribution Center'"/>
+                            </td> -->
+                            <td>
+                                <input type="text" formControlName="allocation" [value]="pricing.get('allocation').value"
+                                    class="form-control form-control-sm" id="allocation" [disabled]="!isEditing"/>
+                            </td>
+                            <td>
+                                <select name="type" formControlName="supplyAgreement" class="form-control form-control-sm"
+                                    value="{{pricing.get('supplyAgreement').value}}" [disabled]="!isEditing">
+                                    <option *ngFor="let agree of supplyAgreements[i]" [value]="agree.id" [selected]="pricing.get('supplyAgreementId').value">#{{agree.num}}, {{agree.fromDate | date:'MM-dd-yyyy'}} - {{agree.thruDate | date:'MM-dd-yyyy'}}</option>
+                                  
+                                </select>
+                            </td>
+                            
+
+                            <td>
+                                <a [ngClass]="{'green':pricing.get('freightPeriodStatus').value.toLowerCase()==='complete','red':pricing.get('freightPeriodStatus').value.toLowerCase()==='incomplete','blue':pricing.get('freightPeriodStatus').value.toLowerCase()==='add','yellow':pricing.get('freightPeriodStatus').value.toLowerCase()==='missing lane'}" class="green" (click)="navigateToFrietPeriod(pricing.get('supplyAgreement').value)">
+                                    <i class="bi " [ngClass]="{'bi-check-lg':pricing.get('freightPeriodStatus').value.toLowerCase()==='complete','bi-x-lg':pricing.get('freightPeriodStatus').value.toLowerCase()==='incomplete'}"></i>
+                                        
+                                        {{pricing.get('freightPeriodStatus').value}}</a> 
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+
+            </table>
+    </div>
+</div>
+<div *ngIf="isEditing" class="action-buttons">
+    <div class="d-flex justify-content-end">
+      <div class="col-auto" style="text-align: right">
+        <button type="button" class="footer-btn" (click)="cancel()">
+          Cancel
+        </button>
+        <button type="submit" class="footer-btn save-btn" (click)="save()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>

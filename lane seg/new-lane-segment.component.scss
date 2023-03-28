@@ -1,0 +1,30 @@
+input {
+    height: 30px;
+    border: 1px solid #DEDEDF;
+    border-radius: 4px;
+    opacity: 1;
+    font: normal normal normal 11px/17px Readex Pro;
+    letter-spacing: 0px;
+    color: #1D1D1D;
+}
+select {
+    height: 30px;
+    font: normal normal normal 11px/17px Readex Pro;
+    letter-spacing: 0px;
+    color: #1D1D1D;
+    background: #F4F5F7 0% 0% no-repeat padding-box;
+    border: 1px solid #DEDEDF;
+    border-radius: 4px;
+    opacity: 1;
+}
+.item-name {
+    color: var(---2185d0-system-blue) !important;
+    text-align: left;
+    font: normal normal normal 12px/30px Readex Pro;
+    letter-spacing: 0px;
+    opacity: 1;
+    padding-left: 5px;
+}
+.createbtn-pad{
+    padding-top: 18px;
+}
