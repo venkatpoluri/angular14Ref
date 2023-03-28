@@ -1,0 +1,1116 @@
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:void(0)" routerLink="/all-items"> Items </a></li>
+        <li><i i-bs name="arrow-right-short"></i></li>
+        <li class="breadcrumb-item"><a href="javascript:void(0)" routerLink="/all-supplier-items"> All Supplier
+                Items</a></li>
+        <li><i i-bs name="arrow-right-short"></i></li>
+        <li class="breadcrumb-item" *ngIf="currentView=='add'">Add New Supplier Item</li>
+        <li class="breadcrumb-item" *ngIf="currentView=='view' || currentView=='edit'">{{supplierItemName}},&nbsp;
+            #{{supplierItemNo}}</li>
+    </ol>
+
+</nav>
+
+<div *ngIf="currentView==='view'">
+    <div class="d-flex justify-content-between">
+        <h2 class="name">{{supplierItemName}}, &nbsp;Supplier Item # {{supplierItemNo}}</h2>
+        <div class="col d-flex justify-content-end align-items-end filterDisplayButton">
+            <!-- <a *ngIf="userCanAddNewElement" [routerLink]="['/item/', itemId,'supplier-item','add']"
+                class="btn create-new-supplierItem" role="button">
+                <span class="bi bi-plus-square-fill"></span>&nbsp;
+                <span>Add New</span>
+            </a> -->
+
+            <div *ngIf="userCanEditElement || userCanDeleteElements" ngbDropdown class="ustom-class">
+                <button type="button" class="btn btn-outline-secondary menu-btn" ngbDropdownToggle><i i-bs
+                        name="three-dots-vertical"></i></button>
+                <div *ngIf="userCanDeleteElements || userCanAddNewElement || userCanEditElement" ngbDropdownMenu
+                    aria-labelledby="dropdownBasic1" class="grid-menu-manage">
+                    <button *ngIf="userCanAddNewElement" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample"
+                        ngbDropdownItem><i i-bs name="files"></i>Copy</button>
+                    <button *ngIf="userCanEditElement" ngbDropdownItem
+                        [routerLink]="['/item/',itemId,'supplier-item','edit', supplierItemId]"><i i-bs
+                            name="pen"></i>Edit</button>
+                            <button ngbDropdownItem (click)="openSpecLogModal(specLogModal)"><i i-bs name="search"></i>View
+                                Log</button>
+                    <button *ngIf="userCanDeleteElements" ngbDropdownItem
+                        (click)="opendeleteModal(deleteSupplierItemModal)"><i i-bs name="trash"></i>Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="currentView=='add'">
+    <p class="header"> Add New Supplier Item</p>
+</div>
+<div *ngIf="currentView=='edit'">
+    <h2 class="name">{{supplierItemName}}, &nbsp;Supplier Item # {{supplierItemNo}}</h2>
+</div>
+
+<div class="outer-block">
+    <div class="row">
+        <form [formGroup]="createSupplierItemFormGroup" (ngSubmit)="CreateSupplierItem()">
+            <div class="col-md-12">
+                <div class="general-info box my-2 pb-3">
+                    <p class="edit-header">General Information</p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4" *ngIf="isEditing && currentView=='add'">
+                                <label for="facilityName" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('facilityId').valid &&
+                                          createSupplierItemFormGroup.get('facilityId').touched
+                                      }">Facility Name <span class="color-red">*</span> </label>
+                                      <div class="form-select">
+                                        <ng-autocomplete
+                                          [data]="searchFacilities"
+                                          [searchKeyword]="autoCompleteFacilityName"
+                                          placeholder="Select"
+                                          [minQueryLength]=4
+                                          (selected)='selectFacilityEvent($event)'
+                                          (inputChanged)='onChangeSearchFacility($event)'
+                                          (inputFocused)='onFocusedFacility($event)'
+                                          [itemTemplate]="facilityTemplate"
+                                          [notFoundTemplate]="notFoundfacilityTemplate"
+                                          formControlName="facilityId"
+                                         >
+                                      </ng-autocomplete>
+
+                                        <ng-template #facilityTemplate let-facility>
+                                        <a [innerHTML]="facility.name">{{facility.name}}</a>
+                                        </ng-template>
+
+                                        <ng-template #notFoundfacilityTemplate let-notFoundfacility>
+                                         <div [innerHTML]="notFoundfacility"></div>
+                                        </ng-template>
+                                        </div>
+
+                                <!-- <select name="facilityName" class="form-select input-para" id="facilityId"
+                                    formControlName="facilityId" (change)="getFacilityName()">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let facility of allFacilities; let i=index;" [value]="facility.id">
+                                        {{facility.name}}</option>
+
+                                </select> -->
+                                <span class="error" *ngIf="
+                                    !createSupplierItemFormGroup.get('facilityId').valid &&
+                                    createSupplierItemFormGroup.get('facilityId').touched">
+                                    Select Facility
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || currentView=='edit'">
+                                <label for="description">Facility Name</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.facility_name:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing">
+                                <label for="itemNumber" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('supplierItemNum').valid &&
+                                          createSupplierItemFormGroup.get('supplierItemNum').touched
+                                      }">Supplier Item #<span class="color-red">*</span> </label>
+                                <input type="text" class="input-para w-100" id="itemNumber" name="itemNumber"
+                                    formControlName="supplierItemNum" maxlength="100">
+                                <span class="error" *ngIf="
+                                        !createSupplierItemFormGroup.get('supplierItemNum').valid &&
+                                        createSupplierItemFormGroup.get('supplierItemNum').touched">
+                                    Enter Supplier Item #
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing">
+                                <label for="supplierItemNo">Supplier Item #</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.num:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing">
+                                <label for="itemName" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('supplierItemName').valid &&
+                                          createSupplierItemFormGroup.get('supplierItemName').touched
+                                      }">Supplier Item Name<span class="color-red">*</span> </label>
+                                <input type="text" class="input-para w-100" id="itemName" name="itemName"
+                                    formControlName="supplierItemName" maxlength="100">
+                                <span class="error" *ngIf="
+                                        !createSupplierItemFormGroup.get('supplierItemName').valid &&
+                                        createSupplierItemFormGroup.get('supplierItemName').touched">
+                                    Enter Supplier Name
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing">
+                                <label for="SupplierItemName">Supplier Item Name</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.name:''}}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isParentItem || currentView=='edit'">
+                                <label for="itemName">Item Name</label>
+                                <p class="input-para">{{itemInfo?.name}}</p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItem && currentView=='add'">
+                                <label for="itemId" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('itemId').valid &&
+                                          createSupplierItemFormGroup.get('itemId').touched
+                                      }">Item Name <span class="color-red">*</span> </label>
+
+                                      <div class="form-select">
+                                        <ng-autocomplete
+                                          [data]="allItems"
+                                          [searchKeyword]="autoCompleteItemName"
+                                          placeholder="Select"
+                                          [minQueryLength]=4
+                                          (selected)='selectParentItemEvent($event)'
+                                          (inputChanged)='onChangeParentItem($event)'
+                                          (inputFocused)='onFocusedParentItem($event)'
+                                          [itemTemplate]="parentitemTemplate"
+                                          [notFoundTemplate]="notFoundparentitemTemplate"
+                                          formControlName="itemId"
+                                         >
+                                      </ng-autocomplete>
+
+                                        <ng-template #parentitemTemplate let-parentitemTemplate>
+                                        <a [innerHTML]="parentitemTemplate.name">{{parentitemTemplate.name}}</a>
+                                        </ng-template>
+
+                                        <ng-template #notFoundparentitemTemplate let-notFoundparentitemTemplate>
+                                         <div [innerHTML]="notFoundparentitemTemplate"></div>
+                                        </ng-template>
+                                        </div>
+
+                                <!-- <select name="itemId" class="form-select input-para" id="itemId"
+                                    formControlName="itemId" (change)="getItemInfo()">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let itm of allItems; let i=index;" [value]="itm.id">
+                                        {{itm.name}}</option>
+
+                                </select> -->
+
+                                <span class="error" *ngIf="
+                                    !createSupplierItemFormGroup.get('itemId').valid &&
+                                    createSupplierItemFormGroup.get('itemId').touched">
+                                    Select Item
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing">
+                                <label for="itmName">Item Name</label>
+                                <p class="input-para">{{itemInfo?.name}}</p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="supplyMatrix">Available For Supply Matrix</label>
+                                <select class="form-select input-para" id="supplyMatrix" name="supplyMatrix"
+                                    formControlName="matrix">
+                                    <option value="" selected>Select</option>
+                                    <option [ngValue]="true">Yes</option>
+                                    <option [ngValue]="false">No</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="availableForSupplymatrix">Available For Supply Matrix</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.is_available_for_cost_matrix
+                                    ==
+                                    true?"Yes":"No":''}}</p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && itemInfo?.isBranded===false">
+                                <label for="gtin" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('gtin').valid &&
+                                          createSupplierItemFormGroup.get('gtin').touched
+                                      }">GTIN </label>
+                                <!-- <p *ngIf="itemInfo?.isBranded" class="input-para">{{itemInfo?.itemDocument?.chain_item?.gtin_case}}</p> -->
+                                <input type="text" class="input-para w-100" id="gtin" name="gtin"
+                                    formControlName="gtin" maxlength="50">
+                                <span class="error" *ngIf="
+                                        !createSupplierItemFormGroup.get('gtin').valid &&
+                                        createSupplierItemFormGroup.get('gtin').touched">
+                                    Enter GTIN
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing">
+                                <label for="gtIn">GTIN</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.gtin_case:''}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="currentView=='add'">
+                                <label for="effectiveDate" [ngClass]="{
+                                        'label-error':
+                                          !createSupplierItemFormGroup.get('effectiveDate').valid &&
+                                          createSupplierItemFormGroup.get('effectiveDate').touched
+                                      }">Effective Date <span class="color-red">*</span></label>
+                                <div class="input-group">
+                                    <input class="form-control" max="9999-12-31" type="date" placeholder="yyyy-mm-dd"
+                                        name="effectiveDate" formControlName="effectiveDate">
+                                </div>
+                                <span class="error" *ngIf="
+                                            !createSupplierItemFormGroup.get('effectiveDate').valid &&
+                                            createSupplierItemFormGroup.get('effectiveDate').touched">
+                                    Enter Effective Date
+                                </span>
+
+
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing">
+                                <label for="effectivedate">Effective Date</label>
+                                <p class="input-para">
+                                    {{this.itemInfo.itemDocument?.supplier_items[0]?.specification?.from_date | date:dateFormat}}
+                                </p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="general-info box my-2 py-3">
+                    <p class="edit-header">Item Expiration</p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="itemShelfLife">Item Shelf Life</label>
+                                <input type="number" class="input-para w-100" id="itemShelfLife" name="itemShelfLife"
+                                    formControlName="itemShelfLife">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="itmshelfLife">Item Shelf Life</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.shelf_life:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="itemShelfLifeUOM">Item Shelf Life UOM</label>
+                                <select class="input-para w-100" id="itemShelfLifeUOM" name="itemShelfLifeUOM"
+                                    formControlName="itemShelfLifeUOM">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let itemUOM of shelfLifeUomEnum">
+                                        {{itemUOM}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="itmshelfLifeUOM">Item Shelf Life UOM</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.shelf_life_uom:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="itemShelfLifeDay">Item Shelf Life(Days) </label>
+                                <input type="text" class="input-para w-100" readonly formControlName="itemShelfLifeDay"
+                                    value="{{ItemShelfLifeDays}}">
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="itmshelfLifedays">Item Shelf Life(Days)</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.itm_shelf_life_days:''}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="gtin">DC Minimum Shelf Life Days</label>
+                                <input type="text" class="input-para w-100" readonly value="{{dcMinShelfLifeDays}}"
+                                    formControlName="dcMinShelfLife">
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="dcminshelfDays">DC Minimum Shelf Life Days</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.itm_dc_min_shelf_days:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="restMinShelfLife">Rest. Minimum Shelf Life Days</label>
+                                <input type="text" class="input-para w-100" name="restMinShelfLife"
+                                    id="restMinShelfLife" readonly value="{{dcRestMinShelfLifeDays}}"
+                                    formControlName="restMinShelfLife">
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="restMinShelfLife">Rest. Minimum Shelf Life Days</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.itm_rest_min_shelf_days:''}}
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="general-info box my-2 py-3">
+                    <p class="edit-header">Item Inventory</p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Units (per case)</label>
+                                <input type="text" readonly class="input-para w-100"
+                                    value="{{itemInfo?.itemDocument?.chain_item?.units_per_package}}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="unitpercase">Units (per case)</label>
+                                <p class="input-para">{{itemInfo?.itemDocument?.chain_item?.units_per_package}}</p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Units (per case) UOM</label>
+                                <select class="input-para w-100" disabled
+                                    value="{{itemInfo?.itemDocument?.chain_item?.units_per_package_uom}}">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let unitsPackUOM of units_per_package_uom" [value]="unitsPackUOM"
+                                        >{{unitsPackUOM}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing ||isParentItemIsChild">
+                                <label for="unitpercaseUOM">Units (per case) UOM</label>
+                                <p class="input-para">{{itemInfo?.itemDocument?.chain_item?.units_per_package_uom}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Unit Range (per case) Low</label>
+                                <input type="number" class="input-para w-100" [attr.disabled] = "true"
+                                    value="{{itemInfo?.itemDocument?.chain_item?.units_per_package_range_low}}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="unitsRangePercaseLow">Unit Range (per case) Low</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.chain_item?.units_per_package_range_low}}</p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Unit Range (per case) High</label>
+                                <input type="number" class="input-para w-100" [attr.disabled] = "true"
+                                    value="{{itemInfo?.itemDocument?.chain_item?.units_per_package_range_high}}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="unitsRangePercasehigh">Unit Range (per case) High</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.chain_item?.units_per_package_range_high}}</p>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="unitsPerInnerPack" [ngClass]="{
+                                                'label-error':
+                                                  !createSupplierItemFormGroup.get('unitsPerInnerPack').valid &&
+                                                  createSupplierItemFormGroup.get('unitsPerInnerPack').touched
+                                              }">Inner Pack Units (per case) <span class="color-red">*</span> </label>
+                                <input type="number" class="input-para w-100" formControlName="unitsPerInnerPack"
+                                    min="0" name="unitsPerInnerPack" id="unitsPerInnerPack">
+                                <span class="error" *ngIf="
+                                            !createSupplierItemFormGroup.get('unitsPerInnerPack').valid &&
+                                            createSupplierItemFormGroup.get('unitsPerInnerPack').touched">
+                                    Inner Pack Units (per case)
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="innerPkgInitPerCase">Inner Pack Units (per case)</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.inner_pack_units_per_package:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="unitsPerInnerPackUOM" [ngClass]="{
+                                                'label-error':
+                                                  !createSupplierItemFormGroup.get('unitsPerInnerPackUOM').valid &&
+                                                  createSupplierItemFormGroup.get('unitsPerInnerPackUOM').touched
+                                              }">Inner Pack Units (per case) UOM<span class="color-red">*</span>
+                                </label>
+                                <select class="input-para w-100" id="unitsPerInnerPackUOM" name="unitsPerInnerPackUOM"
+                                    formControlName="unitsPerInnerPackUOM">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let innerPackUOM of inner_pack_units_per_package_uom"
+                                        [value]="innerPackUOM">{{innerPackUOM}}
+                                    </option>
+                                </select>
+                                <span class="error" *ngIf="
+                                            !createSupplierItemFormGroup.get('unitsPerInnerPackUOM').valid &&
+                                            createSupplierItemFormGroup.get('unitsPerInnerPackUOM').touched">
+                                    Select Inner Pack Units (per case) UOM
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="innerpkgUnitPercaseUOM">Inner Pack Units (per case) UOM</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.inner_pack_units_per_package_uom:''}}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Units/InnerPack</label>
+                                <input type="number" class="input-para w-100" readonly value="{{  UnitsPerInnerPack }}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="uinitsPerpack">Units/InnerPack</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.unit_per_innerPack:''}}
+                                </p>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="general-info box my-2 py-3">
+                    <p class="edit-header">Item Packaging</p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="extnCaseDimensionUOM" [ngClass]="{
+                                                'label-error':
+                                                  !createSupplierItemFormGroup.get('extnCaseDimensionUOM').valid &&
+                                                  createSupplierItemFormGroup.get('extnCaseDimensionUOM').touched
+                                              }">Extension case Dimension UOM<span class="color-red">*</span> </label>
+                                <select class="input-para w-100" name="extnCaseDimensionUOM" id="extnCaseDimensionUOM"
+                                    formControlName="extnCaseDimensionUOM">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let specpkgUOM of spec_package_measurement_uom"
+                                        [value]="specpkgUOM">{{specpkgUOM}}
+                                    </option>
+                                </select>
+
+                                <span class="error" *ngIf="
+                                      !createSupplierItemFormGroup.get('extnCaseDimensionUOM').valid &&
+                                      createSupplierItemFormGroup.get('extnCaseDimensionUOM').touched">
+                                    Select Extension case Dimension UOM
+                                </span>
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specExtnCaseUOM">Extension case Dimension UOM</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_measurement_uom:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="extnCaseLength" [ngClass]="{
+                                                'label-error':
+                                                  !createSupplierItemFormGroup.get('extnCaseLength').valid &&
+                                                  createSupplierItemFormGroup.get('extnCaseLength').touched
+                                              }">Ext. Case Length<span class="color-red">*</span> </label>
+                                <input type="number" class="input-para w-100" id="extnCaseLength" name="extnCaseLength"
+                                    min="0" formControlName="extnCaseLength">
+
+                                <span class="error" *ngIf="
+                                      !createSupplierItemFormGroup.get('extnCaseLength').valid &&
+                                      createSupplierItemFormGroup.get('extnCaseLength').touched">
+                                    Enter Ext. Case Length
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specextncaseLength">Ext. Case Length</label>
+                                <p class="input-para">
+                                  <!-- supplierItemInfo.specification.package_length -->
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_length:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="extnCaseWidth" [ngClass]="{
+                                                'label-error':
+                                                  !createSupplierItemFormGroup.get('extnCaseWidth').valid &&
+                                                  createSupplierItemFormGroup.get('extnCaseWidth').touched
+                                              }">Ext. Case Width <span class="color-red">*</span> </label>
+                                <input type="number" class="input-para w-100" id="extnCaseWidth" name="extnCaseWidth"
+                                    min="0" formControlName="extnCaseWidth">
+
+                                <span class="error" *ngIf="
+                                      !createSupplierItemFormGroup.get('extnCaseWidth').valid &&
+                                      createSupplierItemFormGroup.get('extnCaseWidth').touched">
+                                    Enter Ext. Case Width
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specextnCaseWidth">Ext. Case Width</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_width:''}}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="" [ngClass]="{
+                                                    'label-error':
+                                                      !createSupplierItemFormGroup.get('extnCaseHeight').valid &&
+                                                      createSupplierItemFormGroup.get('extnCaseHeight').touched
+                                                  }">Ext. Case Height <span class="color-red">*</span> </label>
+                                <input type="number" class="input-para w-100" id="extnCaseHeight" name="extnCaseHeight"
+                                    min="0" formControlName="extnCaseHeight">
+
+                                <span class="error" *ngIf="
+                                      !createSupplierItemFormGroup.get('extnCaseHeight').valid &&
+                                      createSupplierItemFormGroup.get('extnCaseHeight').touched">
+                                    Enter Ext. Case Height
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specextnHeight">Ext. Case Height</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_height:''}}
+                                </p>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Item Cube</label>
+                                <input type="number" class="input-para w-100" readonly formControlName="itemCubeValue"
+                                    value="{{cubeValue}}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specItmCube">Item Cube</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.item_cube_value:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Item Cube UOM</label>
+                                <select [attr.disabled] = "true" class="input-para w-100" formControlName="itemCuberUOM">
+                                    <option value="" selected >Select</option>
+                                    <option *ngFor="let cubeUOM of item_cube_uom" [value]="cubeUOM" disabled>
+                                        {{cubeUOM}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specCbeUOM">Item Cube UOM</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.item_cube_uom:''}}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="weightPerCaseUOM" [ngClass]="{
+                                                        'label-error':
+                                                          !createSupplierItemFormGroup.get('weightPerCaseUOM').valid &&
+                                                          createSupplierItemFormGroup.get('weightPerCaseUOM').touched
+                                                      }">Weight per Case UOM <span class="color-red">*</span> </label>
+                                <select class="input-para w-100" id="weightPerCaseUOM" name="weightPerCaseUOM"
+                                    formControlName="weightPerCaseUOM">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let weightUOM of item_weight_uom" [value]="weightUOM">
+                                        {{weightUOM}}
+                                    </option>
+                                </select>
+                                <span class="error" *ngIf="
+                                                    !createSupplierItemFormGroup.get('weightPerCaseUOM').valid &&
+                                                    createSupplierItemFormGroup.get('weightPerCaseUOM').touched">
+                                    Select Weight per Case UOM
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specWrighcubeUOM">Weight per Case UOM</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.weight_uom:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="grossWeightPerCase" [ngClass]="{
+                                                            'label-error':
+                                                              !createSupplierItemFormGroup.get('grossWeightPerCase').valid &&
+                                                              createSupplierItemFormGroup.get('grossWeightPerCase').touched
+                                                          }">Gross Weight per Case<span class="color-red">*</span>
+                                </label>
+                                <input type="number" class="input-para w-100" id="grossWeightPerCase" min="0"
+                                    name="grossWeightPerCase" formControlName="grossWeightPerCase">
+                                <span class="error" *ngIf="
+                                                        !createSupplierItemFormGroup.get('grossWeightPerCase').valid &&
+                                                        createSupplierItemFormGroup.get('grossWeightPerCase').touched">
+                                    Enter Gross Weight per Case
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing ||isParentItemIsChild">
+                                <label for="specGrossWeight">Gross Weight per Case</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_gross_weight:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="" [ngClass]="{
+                                                            'label-error':
+                                                              !createSupplierItemFormGroup.get('netWeightPerCase').valid &&
+                                                              createSupplierItemFormGroup.get('netWeightPerCase').touched
+                                                          }">Net Weight per Case <span class="color-red">*</span>
+                                </label>
+                                <input type="number" class="input-para w-100" id="netWeightPerCase" min="0"
+                                    name="netWeightPerCase" formControlName="netWeightPerCase">
+                                <span class="error" *ngIf="
+                                                        !createSupplierItemFormGroup.get('netWeightPerCase').valid &&
+                                                        createSupplierItemFormGroup.get('netWeightPerCase').touched">
+                                    Enter Net Weight per Case
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specnetweightPercase">Net Weight per Case</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.package_net_weight:''}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="general-info box my-2 py-3">
+                    <p class="edit-header">Shipping Information</p>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="shippingPlatformType" [ngClass]="{
+                                                        'label-error':
+                                                          !createSupplierItemFormGroup.get('shippingPlatformType').valid &&
+                                                          createSupplierItemFormGroup.get('shippingPlatformType').touched
+                                                      }">Shipping Platform Type<span class="color-red">*</span>
+                                </label>
+                                <select class="input-para w-100" id="shippingPlatformType" name="shippingPlatformType"
+                                    formControlName="shippingPlatformType">
+                                    <option value="" selected>Select</option>
+                                    <option *ngFor="let shippingType of item_shipment_package_type"
+                                        [value]="shippingType">{{shippingType}}
+                                    </option>
+                                </select>
+                                <span class="error" *ngIf="
+                                        !createSupplierItemFormGroup.get('shippingPlatformType').valid &&
+                                        createSupplierItemFormGroup.get('shippingPlatformType').touched">
+                                    Select Shipping Platform Type
+                                </span>
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specShippingPlatfmType">Shipping Platform Type</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.shipment_package_type:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Tie Qty</label>
+                                <input type="number" class="input-para w-100" formControlName="tieQty" min="0">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specTieQty">Tie Qty</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?(itemInfo?.itemDocument?.supplier_items[0]?.specification?.tie_qty??''):''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>High Qty</label>
+                                <input type="number" class="input-para w-100" formControlName="highQty" min="0">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing ||isParentItemIsChild">
+                                <label for="specHightQty">High Qty</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?(itemInfo?.itemDocument?.supplier_items[0]?.specification?.high_qty??''):''}}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Cases Per Shipping Platform</label>
+                                <input type="number" readonly class="input-para w-100"
+                                    formControlName="casesPerShippingPlatform" value="{{casesPerShippingPlatform}}">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specCasesPerShippingPlatform">Cases Per Shipping Platform</label>
+                                <p class="input-para">
+                                    {{(itemInfo?.itemDocument?.supplier_items?.length>0)?(itemInfo.itemDocument.supplier_items[0]?.specification?.cases_per_shipping_platform??''):''}}
+                                </p>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Cases Per Ocean Platform</label>
+                                <input type="number" class="input-para w-100" formControlName="casesPerOceanContainer"
+                                    min="0">
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specCasesPerceanPlatform">Cases Per Ocean Platform</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo.itemDocument.supplier_items[0]?.specification?.cases_per_ocean_container:''}}
+                                </p>
+                            </div>
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label for="casesPerTruckLoad" [ngClass]="{
+                                                                'label-error':
+                                                                  !createSupplierItemFormGroup.get('casesPerTruckLoad').valid &&
+                                                                  createSupplierItemFormGroup.get('casesPerTruckLoad').touched
+                                                              }">Cases Per Truck Load <span class="color-red">*</span>
+                                </label>
+                                <input type="number" class="input-para w-100" id="casesPerTruckLoad"
+                                    name="casesPerTruckLoad" formControlName="casesPerTruckLoad" min="0">
+                                <span class="error"
+                                    *ngIf="
+                                                            !createSupplierItemFormGroup.get('casesPerTruckLoad').valid &&
+                                                            createSupplierItemFormGroup.get('casesPerTruckLoad').touched">
+                                    Enter Cases Per Truck Load
+                                </span>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="speccasesperTruckload">Cases Per Truck Load</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.cases_per_truck_load:''}}
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Platform Type per Truckload</label>
+                                <input type="number" readonly class="input-para w-100"
+                                    formControlName="platformTypePerTruckload" value="{{platformTypeTruckload}}">
+
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specPltTyperTruckLoad">Platform Type per Truckload</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.platform_per_truck_loaded:''}}
+                                </p>
+                            </div>
+
+                            <div class="col-md-4" *ngIf="isEditing && !isParentItemIsChild">
+                                <label>Is Double Stack Allowed</label>
+                                <div class="input-para">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input input-radio" type="radio" [value]="true"
+                                            name="chain-brand" formControlName="doubleStackingAllowed">
+                                        <label class="form-check-label input-para ms-2" for="chb-y">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input input-radio" type="radio" [value]="false"
+                                            name="chain-brand" formControlName="doubleStackingAllowed">
+                                        <label class="form-check-label input-para ms-2" for="chb-y">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4" *ngIf="!isEditing || isParentItemIsChild">
+                                <label for="specDoubleStackAllowed">Is Double Stack Allowed</label>
+                                <p class="input-para">
+                                    {{itemInfo?.itemDocument?.supplier_items?.length>0?itemInfo?.itemDocument?.supplier_items[0]?.specification?.is_double_stack_allowed==false?"No":"Yes":''}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-top:50px;">
+                </div>
+            </div>
+
+
+
+
+
+            <div *ngIf="currentView!='view'" style="margin-top: 40px;"
+                class="action-buttons footer-action d-flex justify-content-between">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4 button-sm-4"></div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-6 button-sm-6">
+                            <button class="btn-height-width-supplierItem" (click)="Cancel()">Cancel</button>
+                            <button type="submit"
+                                class="btn-height-width-supplierItem">{{currentView==='edit'?'Update':'Create'}}</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<ng-template #deleteSupplierItemModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title"></h4>
+        <button type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+            <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex justify-content-center">
+            <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+            </i-bs>
+        </div>
+        <div class="d-flex justify-content-center sure-div">
+            <p>Are you sure you want to delete ?</p>
+        </div>
+        <div class="d-flex justify-content-center">
+            <h4 class="name"> Supplier Item: #{{supplierItemNo}}</h4>
+        </div>
+        <div class="justify-content-center warning-div">
+            <p>This Operation cannot be undone</p>
+            <div class="warning-box">
+                <div>
+                    <p><i-bs name="arrow-right-short"></i-bs>Supplier Item info will be permanently deleted </p>
+                    <p><i-bs name="arrow-right-short"></i-bs>All data associated will be deleted </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-height-width-supplierItem cancel-button-color" style="padding:initial"
+            (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" style="padding:initial" class="btn btn-height-width-supplierItem delete-button-color"
+            (click)="deleteSupplierItem()">Yes,
+            Delete</button>
+    </div>
+</ng-template>
+
+
+
+<div class="modal-dialog" style="width:530px;">
+
+    <ng-template #newSpecEffectiveDateComponent let-modal>
+        <form [formGroup]="updateSupplierItemSpecFormGroup">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modal-basic-title-effectiveDate"></h4>
+                <button type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+                    <i-bs name="x-circle"></i-bs>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+                    </i-bs>
+                </div>
+                <div class="d-flex justify-content-center sureEffectiveDate-div">
+                    <p>Changes to the Supplier Item information may impact the freight per case values
+                        for this Item.Please enter an Effective Date.
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <h4 class="name"> {{supplierItemName}} ,#{{supplierItemNo}}</h4>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3"></div>
+
+                    <div class="col-md-9">
+                        <label style="text-align: left;" for="newSpecEffectiveDate" [ngClass]="{
+                        'label-error':
+                          !updateSupplierItemSpecFormGroup.get('newSpeceffectiveDate').valid &&
+                          updateSupplierItemSpecFormGroup.get('newSpeceffectiveDate').touched
+                      }">Effective Date <span class="required">*</span> </label>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-9">
+                        <input class="form-control" style="width:150px" max="9999-12-31" type="date"
+                            placeholder="yyyy-mm-dd" name="newEffectiveDate" id="newSpecEffectiveDate"
+                            formControlName="newSpeceffectiveDate">
+
+                        <span class="error" *ngIf="
+                        (updateSupplierItemSpecFormGroup.get('newSpeceffectiveDate').hasError('required') ||
+                        updateSupplierItemSpecFormGroup.get('newSpeceffectiveDate').touched)
+                        && updateSupplierItemSpecFormGroup.get('newSpeceffectiveDate').hasError('errorDate')
+                        ">
+                            Enter Valid Effective Date, it should be after {{ latestSpec?.from_date }}
+                        </span>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer two-btn-modal-footer">
+                <button class="btn-height-width-supplierItem cancel-button-color"
+                    (click)="modal.dismiss('Cross click')">Cancel</button>
+                <button type="button" (click)="UpdateSupplierItemWithNewSpec()"
+                    class="btn btn-height-width-supplierItem delete-button-color">Save</button>
+            </div>
+        </form>
+    </ng-template>
+</div>
+
+
+
+<ng-template #specLogModal let-modal>
+    <div class="modal-content">
+        <div class="row effective-range">
+            <div class="col-md-3">
+                <label>Please Select Effective Dates</label>
+                <select style="cursor: pointer;" class="input-para w-100" id="effective-range" name="effective-range"
+                    [(ngModel)]="specSelected" (change)="specChanged()">
+                    <option *ngFor="let effectiveDate of specLogData[0]; let i = index" [value]="i">
+                        {{effectiveDate.from_date}} <span *ngIf="effectiveDate.thru_date!==undefined">-</span>
+                        {{effectiveDate.thru_date}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-9" style="text-align: right;">
+                <button type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+                    <i-bs name="x-circle"></i-bs>
+                </button>
+            </div>
+        </div>
+        <div class="modal-body modal-body-box">
+            <div class="general-info box my-2 pb-3">
+                <p class="edit-header">Item Packaging</p>
+                <div class="item-pack">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Extension Case Dimension UOM</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_measurement_uom != specLogData[0][previousSpec].package_measurement_uom}">
+                                {{specLogData[0][specSelected].package_measurement_uom}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Ext. Case - Length</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_length != specLogData[0][previousSpec].package_length}">
+                                {{specLogData[0][specSelected].package_length==null?"0":specLogData[0][specSelected].package_length}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Ext. Case - Width</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_width != specLogData[0][previousSpec].package_width}">
+                                {{specLogData[0][specSelected].package_width==null?"0":specLogData[0][specSelected].package_width}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Ext. Case - Height</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_height != specLogData[0][previousSpec].package_height}">
+                                {{specLogData[0][specSelected].package_height==null?"0":specLogData[0][specSelected].package_height}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row margin-top-8">
+                        <div class="col-md-3">
+                            <label>Item Cube</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].item_cube_value != specLogData[0][previousSpec].item_cube_value}">
+                                {{specLogData[0][specSelected].item_cube_value==null?"0":specLogData[0][specSelected].item_cube_value}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Item Cube UOM</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].item_cube_uom != specLogData[0][previousSpec].item_cube_uom}">
+                                {{specLogData[0][specSelected].item_cube_uom}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Weight Per Case UOM</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].weight_uom != specLogData[0][previousSpec].weight_uom}">
+                                {{specLogData[0][specSelected].weight_uom}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Gross Weight Per Case</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_gross_weight != specLogData[0][previousSpec].package_gross_weight}">
+                                {{specLogData[0][specSelected].package_gross_weight==null?"0":specLogData[0][specSelected].package_gross_weight}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row margin-top-8">
+                        <div class="col-md-3">
+                            <label>Net Weight Per Case</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].package_net_weight != specLogData[0][previousSpec].package_net_weight}">
+                                {{specLogData[0][specSelected].package_net_weight==null?"0":specLogData[0][specSelected].package_net_weight}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="shipping-info box my-2 pb-3">
+                <p class="edit-header">Shipping Information</p>
+                <div class="item-pack">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label>Shipping Platform Type</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].shipment_package_type != specLogData[0][previousSpec].shipment_package_type}">
+                                {{specLogData[0][specSelected].shipment_package_type}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Tie Qty</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].tie_qty != specLogData[0][previousSpec].tie_qty}">
+                                {{specLogData[0][specSelected].tie_qty == null? "0" :
+                                specLogData[0][specSelected].tie_qty}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>High Qty</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].high_qty != specLogData[0][previousSpec].high_qty}">
+                                {{specLogData[0][specSelected].high_qty==null?"0":specLogData[0][specSelected].high_qty}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Cases Per Shipping Platform</label>
+                            <p class="input-para">{{casesPerShipping}}</p>
+                        </div>
+                    </div>
+                    <div class="row margin-top-8">
+                        <div class="col-md-3">
+                            <label>Cases Per Ocean Platform</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].cases_per_ocean_container != specLogData[0][previousSpec].cases_per_ocean_container}">
+                                {{specLogData[0][specSelected].cases_per_ocean_container==null?"0":specLogData[0][specSelected].cases_per_ocean_container}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Cases Per Truck Load</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].cases_per_truck_load != specLogData[0][previousSpec].cases_per_truck_load}">
+                                {{specLogData[0][specSelected].cases_per_truck_load==null?"0":specLogData[0][specSelected].cases_per_truck_load}}
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Platform Type Truckload</label>
+                            <p class="input-para">{{platformPerTruckload}}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label>Is Double Stack Allowed</label>
+                            <p class="input-para"
+                                [ngClass]="{'color-red': specLogData[0][specSelected].is_double_stack_allowed != specLogData[0][previousSpec].is_double_stack_allowed}">
+                                {{specLogData[0][specSelected].is_double_stack_allowed}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+<div class="offcanvas offcanvas-end" style="width: 85%;" id="offcanvasExample">
+    <div class="offcanvas-header pannelHeader">
+        <div class="offcanvas-title pannelHeaderTitle">Copy Supplier Item</div><br />
+        <div class="circle-button" data-bs-dismiss="offcanvas" (click)="windowReload()">
+            <i-bs name="x-circle"></i-bs>
+        </div>
+    </div>
+    <div class="offcanvas-body">
+        <app-grid [gridData]="facilities" [currentView]="'supplierItemInfo'" [showMenu]="true" [tenant]="tenant"
+            [componentName]="'supplierItemInfo'" [pagination]="pagination" (optionSelected)="optionSelected($event)"
+            (onApplyFilter)="ApplyFilter($event)"></app-grid>
+    </div>
+    <div class="text-end row">
+        <div class="col-md-3 date">
+            <form #formVal="ngForm">
+                <label for="bg-date" [class.error]="fd.touched && fd.invalid">Effective Date<span
+                        class="color-red">*</span> </label>
+                <input type="date" class="input-para w-100" id="bg-date" [(ngModel)]="effectiveDate" name="from_date"
+                    required #fd="ngModel" [class.select-border]="fd.touched && fd.invalid">
+            </form>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-2 cancel-button">
+            <button data-bs-dismiss="offcanvas" class="btn-height-width" type="button" (click)="windowReload()">Cancel</button>
+        </div>
+        <div class="col-md-2" style="text-align: left;">
+            <button [disabled]="formVal.invalid" (click)="copySupplierItem()" [class.cursor-not]="formVal.invalid"
+                type="submit" data-bs-dismiss="offcanvas" class="update-manage btn-height-width">Copy</button>
+        </div>
+    </div>
+</div>
