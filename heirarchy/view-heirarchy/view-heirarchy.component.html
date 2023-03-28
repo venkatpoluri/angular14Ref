@@ -1,0 +1,20 @@
+<nav>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="javascript:void(0)"> Items </a></li>
+    <li><i i-bs name="arrow-right-short"></i></li>
+    <li class="breadcrumb-item"><a routerLink="/all-heirarchy" href="javascript:void(0)">All Hierarchy</a></li>
+    <li><i i-bs name="arrow-right-short"></i></li>
+    <li class="breadcrumb-item">Hierarchy Info</li>
+  </ol>
+</nav>
+
+<div class="col-md-9 display-inline-block">
+    <div class="d-flex  align-items-center tabs-nav">
+      <ul ngbNav class="nav-tabs">
+        <li [ngbNavItem]="link.fragment" *ngFor="let link of links">
+          <a ngbNavLink [routerLink]="[link.fragment]">{{ link.title }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <router-outlet></router-outlet>

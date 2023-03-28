@@ -1,0 +1,41 @@
+.pannelHeaderTitle {
+  margin:10px;
+  font: var(--unnamed-font-style-normal) normal bold 18px/23px var(--unnamed-font-family-readex-pro);
+  letter-spacing: var(--unnamed-character-spacing-0);
+  color: var(--unnamed-color-2f4e6d);
+  text-align: left;
+  font: normal normal bold 18px/23px Readex Pro;
+  letter-spacing: 0px;
+  color: #2F4E6D;
+  opacity: 1;
+}
+
+::ng-deep .offcanvas {
+  width: 60% !important;
+ }
+::ng-deep .offcanvas.offcanvas-end {
+  width: 60% !important;
+ }
+
+.btn-height-width {
+  width: 180px;
+  height: 30px;
+  font: normal normal 600 14px/18px Readex Pro;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  letter-spacing: 0px;
+  border: 1px solid #484848;
+  border-radius: 4px;
+}
+.update-manage {
+  background: #2F4E6D;
+  color: #FFFFFF;
+}
+.text-end{
+  background-color: #ffff;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+button{
+  margin: 10px 4px
+}

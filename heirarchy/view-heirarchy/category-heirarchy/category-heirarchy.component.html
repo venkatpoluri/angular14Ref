@@ -1,0 +1,125 @@
+<div class="row">
+  <div class="col-md-3" style="overflow-x:auto">
+    <div class="my-2">
+       <button (click)="showMainMore()" [ngClass]="{'bg-color-btn-org':showMore, 'bg-color-btn-white':!showMore}">
+        <i [ngClass]="{'bi bi-caret-down-fill':showMore, 'bi bi-caret-right-fill':!showMore}"></i>{{mainHeirarchyName}}
+       </button>
+       <span>
+       </span>
+    </div>
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" *ngIf="showMore" class="ms-2">
+      <!-- This is the tree node template for leaf nodes -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10">
+        <!-- use a disabled button to provide padding for tree leaf -->
+        <!-- <button mat-icon-button disabled></button>
+         -->
+         <button matTreeNodeToggle (click)="openLeafNode(node)" class="bg-color-btn-white me-1"
+                [attr.aria-label]="'Toggle ' + node.name">
+          <i [ngClass]="{'bi bi-caret-down-fill':treeControl.isExpanded(node), 'bi bi-caret-right-fill':!treeControl.isExpanded(node)}"></i>
+        </button>
+        <span matTreeNodeToggle (click)="openLeafNode(node)" style="cursor: pointer" class="nodeStyleParent">
+          {{node.name}}
+        </span>
+        <!-- <a style="cursor:pointer" (click)="openLeafNode(node)" class="nodeStyleName">{{node.name|uppercase}}</a> -->
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="10">
+        <button matTreeNodeToggle (click)="getNode(node)" class="bg-color-btn-white me-1"
+                [attr.aria-label]="'Toggle ' + node.name">
+          <i [ngClass]="{'bi bi-caret-down-fill':treeControl.isExpanded(node), 'bi bi-caret-right-fill':!treeControl.isExpanded(node)}"></i>
+        </button>
+        <span matTreeNodeToggle (click)="getNode(node)" style="cursor: pointer" class="nodeStyleParent">
+          {{node.name}}
+        </span>
+      </mat-tree-node>
+    </mat-tree>
+  </div>
+
+  <div class="col-md-9">
+    <div *ngIf="!isLeafNode && (userCanDeleteElements || userCanEditElement)" ngbDropdown class="d-flex justify-content-end" style="right: 20px;">
+      <div  ngbDropdown class="custom-class">
+        <button
+
+        type="button" class="btn btn-outline-secondary menu-btn" style="background-color: #fff;" ngbDropdownToggle><i i-bs
+            name="three-dots-vertical"></i>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1" >
+          <!-- <button *ngIf="userCanAddNewElement" ngbDropdownItem data-bs-toggle="offcanvas" (click)="setInputParameter(1)" data-bs-target="#addnewCategory" ><i i-bs
+            name="pen"></i>&nbsp;Add New Category</button>
+          <button *ngIf="userCanEditElement " ngbDropdownItem data-bs-target="#addnewCategory" data-bs-toggle="offcanvas"   (click)="setInputParameter(2)"><i i-bs
+                name="pen"></i>&nbsp;Edit</button> -->
+          <button *ngIf="userCanAddNewElement" ngbDropdownItem (click)="setInputParameter(addCategory,1)" ><i i-bs
+            name="pen"></i>&nbsp;Add New Category</button>
+          <button *ngIf="userCanEditElement " ngbDropdownItem (click)="setInputParameter(addCategory,2)"><i i-bs
+                name="pen"></i>&nbsp;Edit</button>
+        <button *ngIf="userCanDeleteElements " (click)="opendeleteModal(deleteRecords)" ngbDropdownItem><i i-bs name="trash"></i>&nbsp;Delete</button>
+        </div>
+      </div>
+
+      </div>
+    <div *ngIf="!isLeafNode" class="table-height">
+      <h1 class="headingHierarchy">{{mainHeirarchyName}}</h1>
+      <h3 class="shadow-sm p-3 mb-1 bg-white rounded heading-style">Category Name</h3>
+      <div *ngFor="let catList of catagoryList; let i=index" class="mt-2">
+        <div class="ps-3 pt-2">
+          <input type="checkbox" id="checked{{i}}" (change)="getNodeId(catList, $event)">
+          <span>
+            {{catList.name}}
+          </span>
+        </div>
+        <hr width="98%" class="ms-2">
+      </div>
+    </div>
+    <app-grid *ngIf="isLeafNode" [createButtonText]="''" [tenant]="tenant" [componentName]="categoryName+classificationType+'List'" (onApplyFilter)="ApplyFilter($event)" (addItemsToHeirarchy)="OnAddItems($event)" [pagination]="pagination" [gridData]="items" [currentNode]="currentNode" [classificationType]="classificationType" [currentNodeName]="currentNodeName" [currentView]="'heirarchy'" [parantComponentId]="heirarchyId" [showMenu]="true" (onDeleteAll)="DeleteAll($event)"></app-grid>
+  </div>
+  </div>
+  <!-- <div class="offcanvas offcanvas-end" style="width: 30%;" id="addnewCategory" *ngIf="currentView=='add' || (selectedCategories.length==1)">
+    <app-new-category [categoryName]="categoryName" [levelId]="levelId" [nodeId]="nodeId" [currentView]="currentView" [heirarchyId]="heirarchyId"> </app-new-category>
+  </div> -->
+  <ng-template #addCategory>
+    <app-new-category [categoryName]="categoryName" [levelId]="levelId" [nodeId]="nodeId" [currentView]="currentView" [heirarchyId]="heirarchyId" (heirarchyCat)="addCatToTree($event)"> </app-new-category>
+  </ng-template>
+
+  <ng-template #deleteRecords let-modal>
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title"></h4>
+        <button type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+            <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex justify-content-center">
+            <i-bs name="exclamation-triangle" class="exclamation" width="75" height="75">
+            </i-bs>
+        </div>
+        <div class="d-flex justify-content-center sure-div">
+            <p>Are you sure you want to delete this Hierarchy Category(s)?</p>
+        </div>
+        <div class="d-flex justify-content-center">
+            <h4 class="name">
+                <span *ngFor=" let category of selectedCategories">{{category.name}}&nbsp;
+                </span>
+            </h4>
+        </div>
+        <div class="justify-content-center warning-div">
+            <p>This Operation cannot be undone</p>
+            <div class="warning-box">
+                <div>
+                    <p>
+                        <i-bs name="arrow-right-short"></i-bs>This Hierarchy Category page will be permanently deleted
+                    </p>
+                    <p>
+                        <i-bs name="arrow-right-short"></i-bs>All data associated with this Hierarchy Category will be deleted
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer two-btn-modal-footer">
+        <button class="btn-height-width cancel-button-color" (click)="modal.dismiss('Cross click')">Cancel</button>
+        <button type="button" class="btn-height-width delete-button-color" (click)="DeleteHeirarchyCategory(selectedCategories)">Yes,
+            Delete</button>
+    </div>
+  </ng-template>
+

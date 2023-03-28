@@ -1,0 +1,48 @@
+<div class="offcanvas-header pannelHeader" >
+    <div class="offcanvas-title pannelHeaderTitle">
+        {{CategoryHeading}}
+    </div><br />
+    <div class="circle-button" (click)="closeCanvas()">
+        <i-bs name="x-circle"></i-bs>
+    </div>
+</div>
+<div class="offcanvas-body" >
+        <div class="margin-top-20" style="width: 100%;">
+            <label>Name<span class="color-red">*</span></label>
+            <input type="text" class="input-para" id="category_name" required name="category_name"
+            #category_name="ngModel"
+            [(ngModel)]="heirarchyCategoryForm.name">
+        </div>
+        <small
+            *ngIf="category_name.hasError('required') && (category_name.touched || wholeForm.submitted)"
+            class="error">Category Name is Required</small>
+</div>
+<form #wholeForm="ngForm" (ngSubmit)=" currentView==='add'? onSubmit(wholeForm): editCategory(wholeForm)">
+    <div class="text-end row" >
+        <div class="col-md-3" >
+            <button (click)="closeCanvas()" class="manage-footer btn-height-width" type="button" >Cancel</button>
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3" style="text-align: left;" >
+            <button type="submit" data-bs-dismiss="offcanvas" class="manage-footer update-manage btn-height-width">{{AddUpdateButton}}</button>
+        </div>
+    </div>
+</form>
+<ng-template #errorModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Error Messages</h4>
+        <button type="button" class="delete-cross" (click)="modal.dismiss('Cross click')">
+          <i-bs name="x-circle"></i-bs>
+        </button>
+    </div>
+      <div class="modal-body">
+          <div class="inner-body">
+            <p class="error-message" *ngFor="let error of createErrors">
+                {{error}}
+            </p>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-height-width-error" (click)="modal.dismiss('Cross click')">Ok</button>
+    </div>
+  </ng-template>

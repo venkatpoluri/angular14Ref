@@ -1,0 +1,127 @@
+.pannelHeaderTitle {
+    font: var(--unnamed-font-style-normal) normal bold 18px/23px var(--unnamed-font-family-readex-pro);
+    letter-spacing: var(--unnamed-character-spacing-0);
+    color: var(--unnamed-color-2f4e6d);
+    text-align: left;
+    font: normal normal bold 18px/23px Readex Pro;
+    letter-spacing: 0px;
+    color: #2F4E6D;
+    opacity: 1;
+  }
+  .circle-button {
+    border: none !important;
+    background-color: transparent !important;
+    color: #2F4E6D;
+    cursor: pointer;
+  }
+ 
+.update-manage {
+    background: #2F4E6D !important;
+    color: #FFFFFF !important;
+  }
+
+input {
+    height: 30px;
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+    font: normal normal normal 11px/17px Readex Pro;
+    letter-spacing: 0px;
+    color: #1d1d1d;
+    width: 100%;
+}
+label {
+  display: block;
+  text-align: left;
+  font: normal normal bold 12px/12px Readex Pro;
+  letter-spacing: 0.14px;
+  color: black;
+  opacity: 1;
+}
+.btn-height-width {
+    width: 180px;
+    height: 30px;
+    font: normal normal 600 14px/18px Readex Pro;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    letter-spacing: 0px;
+    border: 1px solid #484848;
+    border-radius: 4px;
+    padding: inherit;
+    margin-top: 15px;
+}
+.text-end{
+    bottom: 0px;
+    position: absolute;
+    padding: 10px;
+  }
+  .margin-top-20{
+    margin-top: 20px;
+  }
+  textarea {
+    height: 100px;
+    border: 1px solid #dededf;
+    border-radius: 4px;
+    opacity: 1;
+    font: normal normal normal 11px/17px Readex Pro;
+    letter-spacing: 0px;
+    color: #1d1d1d;
+    width: 100%;
+}
+.color-red {
+    color: #d05739;
+  }
+  .error {
+    text-align: left;
+    font: normal normal normal 12px/12px Readex Pro;
+    letter-spacing: 0.12px;
+    color: #CC3F3F;
+    opacity: 1;
+}
+.modal-title{
+  text-align: left;
+  font: normal normal bold 14px/40px Readex Pro !important;
+  letter-spacing: 0px;
+  color: #484848;
+  opacity: 1;
+  margin-top:13px;  
+}
+.modal-header{
+  height: 40px;
+}
+.delete-cross{
+  border: none;
+  background: transparent;
+  color: #1D1D1D;
+}
+.modal-body{
+  padding: 0;
+}
+.modal-footer{
+  border-top: none;
+  justify-content: center;
+}
+.inner-body{
+  border: 1px solid #dededf;
+  width: 90%;
+  margin-left: 20px;
+  margin-top: 20px;
+  min-height: 100px;
+}
+.error-message{
+  color: #D05739;
+  text-align: left;
+  font: normal normal normal 12px/40px Readex Pro !important;
+  margin-left: 10px;
+}
+.exclamation{
+  color: #CC3F3F;;
+}
+.btn-height-width-error {
+  width: 210px;
+  height: 30px;
+  font: normal normal 600 14px/18px Readex Pro;
+  letter-spacing: 0px;
+  border: 1px solid #484848;
+  border-radius: 4px;
+  background-color: #ffffff;
+}

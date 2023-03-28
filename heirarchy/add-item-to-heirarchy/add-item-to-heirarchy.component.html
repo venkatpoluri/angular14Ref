@@ -1,0 +1,18 @@
+<div class="offcanvas-header pannelHeader" style=" overflow-y: auto;" >
+  <div class="offcanvas-title pannelHeaderTitle">Add {{type}}</div>
+  <div class="circle-button" style="cursor: pointer;" (click)="closeCanvas()">
+      <i-bs name="x-circle"></i-bs>
+  </div>
+</div>
+<div class="offcanvas-body">
+  <app-alternative-item-grid [currentView]="'addItemstoHeirachy'" [gridData]="items" [pagination]="pagination" [loading]="isLoading" (onApplyFilter)="ApplyFilter($event)" (onSelectedAlternativeItems)="addItems($event)"></app-alternative-item-grid>
+  <div class="text-end" >
+    <div class="d-flex justify-content-between">
+      <div class="col-auto"></div>
+      <div class="col-auto" style="text-align: right">
+        <button data-bs-dismiss="offcanvas" class="manage-footer btn-height-width" type="button" (click)="closeCanvas()">Cancel</button>
+        <button  class="manage-footer update-manage btn-height-width" (click)="addItemHeirarchy()">Add</button>
+    </div>
+    </div>
+  </div>
+</div>

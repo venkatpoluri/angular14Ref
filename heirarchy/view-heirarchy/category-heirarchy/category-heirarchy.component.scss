@@ -1,0 +1,170 @@
+:host ::ng-deep .dropdown-class{
+    display: none !important;
+}
+.example-tree-invisible {
+  display: none;
+}
+
+.example-tree ul,
+.example-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+/*
+ * This padding sets alignment of the nested nodes.
+ */
+.example-tree .mat-nested-tree-node div[role=group] {
+  padding-left: 40px;
+}
+
+/*
+ * Padding for leaf nodes.
+ * Leaf nodes need to have padding so as to align with other non-leaf nodes
+ * under the same parent.
+ */
+.example-tree div[role=group] > .mat-tree-node {
+  padding-left: 40px;
+}
+
+.table-height{
+  border-radius: 9px;
+  font: normal normal normal 12px/13px Readex Pro;
+  box-shadow: -5px 5px 5px #e4e4e4;
+}
+.heading-style{
+  font: normal normal bold 14px/15px Readex Pro;
+}
+
+.bg-color-btn-org{
+  background-color: #c84d05;
+  font: normal normal normal 14px/15px Readex Pro;
+  color: white;
+  border-radius: 11px;
+  padding: 7px 10px;
+  border: 0;
+  transition: 0.3s;
+}
+.bg-color-btn-white{
+  font: normal normal normal 14px/15px Readex Pro;
+  color: black;
+  border-radius: 11px;
+  padding: 7px 10px;
+  border: 0;
+  transition: 0.3s;
+}
+.menu-btn{
+  width: 33px;
+  height: 33px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  border-radius: 4px;
+  padding: 0;
+  margin-right: -30px;
+    margin-top: 24px;
+}
+.menu-btn :hover{
+  background-color: #fff;
+  color: var(--bs-btn-color) !important;
+}
+.dropdown-item i {
+  margin-right: 3px;
+}
+.dropdown-toggle::after {
+  display: none;
+}
+.modal-header{
+  border-bottom: none;
+  height: 40px;
+}
+.delete-cross{
+  border: none;
+  background: transparent;
+  color: #1D1D1D;
+}
+.modal-body{
+  padding: 0;
+}
+.sure-div{
+  text-align: left;
+  font: normal normal normal 16px/45px Readex Pro;
+  letter-spacing: 0px;
+  color: #1D1D1D;
+  opacity: 1;
+  margin-top:5px;
+  height: 45px;
+}
+.warning-div{
+  display: block;
+  margin-left: 47px;
+  margin-top: 30px;
+}
+.warning-div p{
+  text-align: left;
+  font: normal normal normal 14px/18px Readex Pro;
+  letter-spacing: 0px;
+  color: #484848;
+  opacity: 1;
+}
+.warning-box{
+  background: #F8F9FD 0% 0% no-repeat padding-box;
+  border: 1px solid #DDE1E5;
+  opacity: 1;
+  width: 416px;
+  height: 96px;
+  padding-top: 20px;
+  padding-left: 5px;
+}
+.warning-box p{
+  text-align: left;
+  font: normal normal normal 12px/13px Readex Pro;
+  letter-spacing: 0px;
+  color: #1D1D1D;
+  opacity: 1;
+}
+.modal-footer{
+  border-top: none;
+  justify-content: center;
+}
+.name{
+  text-align: left;
+  font: normal normal bold 19px/12px Readex Pro;
+  letter-spacing: 0.16px;
+  color: #2F4E6D;
+  opacity: 1;
+}
+.exclamation{
+  color: #CC3F3F;;
+}
+.btn-height-width {
+  width: 210px;
+  height: 30px;
+  font: normal normal 599 14px/18px Readex Pro;
+  letter-spacing: 0px;
+  border: 1px solid #484848;
+  border-radius: 4px;
+}
+.delete-button-color{
+  background: #2F4E6D;
+  color: #FFFFFF;
+}
+.nodeStyleName{
+  font: normal normal 500 12px/18px Readex Pro;
+  text-decoration: none;
+  color:black;
+}
+.nodeStyleParent{
+  font: normal normal 500 14px/18px Readex Pro;
+  // cursor: pointer;
+}
+.headingHierarchy{
+  font: normal normal 600 24px/18px Readex Pro;
+  padding: 17px;
+  margin-bottom: 0;
+}
+
+::ng-deep .offcanvas {
+  width: 400px !important;
+ }
+::ng-deep .offcanvas.offcanvas-end {
+  width: 400px !important;
+ }
